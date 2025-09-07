@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { photoCollections, photoData } from '../../data/photos';
 
 interface PhotoCollection {
@@ -14,6 +14,7 @@ interface PhotoGalleryProps {
 
 const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onOpenCollection }) => {
   const collections: PhotoCollection[] = photoCollections;
+  const [lastClickTime, setLastClickTime] = useState(0);
 
   // Function to get the first photo from a collection
   const getFirstPhotoFromCollection = (collectionId: string) => {
@@ -36,6 +37,15 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onOpenCollection }) => {
       }
     });
   }, [collections]);
+
+  const handleCollectionClick = useCallback((collection: PhotoCollection) => {
+    const now = Date.now();
+    // Prevent rapid double-clicks
+    if (now - lastClickTime > 300) {
+      setLastClickTime(now);
+      onOpenCollection?.(collection);
+    }
+  }, [onOpenCollection, lastClickTime]);
 
   return (
     <div style={{ 
@@ -69,7 +79,11 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onOpenCollection }) => {
                 transition: 'all 0.1s ease',
                 minHeight: '80px'
               }}
-              onClick={() => onOpenCollection?.(collection)}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCollectionClick(collection);
+              }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.background = '#f0f0f0';
                 e.currentTarget.style.transform = 'scale(1.02)';

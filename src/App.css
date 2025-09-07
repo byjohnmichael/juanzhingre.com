@@ -21,6 +21,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile-first responsive design */
+@media (max-width: 768px) {
+  .App {
+    overflow-x: hidden;
+  }
+  
+  /* Ensure proper viewport handling */
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;

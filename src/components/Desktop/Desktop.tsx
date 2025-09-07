@@ -23,6 +23,11 @@ const DesktopContainer = styled.div`
   position: relative;
   overflow: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  @media (max-width: 768px) {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
 `;
 
 const Taskbar = styled.div`
@@ -41,6 +46,11 @@ const Taskbar = styled.div`
   padding: 0 4px;
   z-index: 1000;
   box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+  
+  @media (max-width: 768px) {
+    height: 50px;
+    padding: 0 8px;
+  }
 `;
 
 const StartButton = styled.button`
@@ -59,6 +69,14 @@ const StartButton = styled.button`
   margin-right: 8px;
   box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.3);
   
+  @media (max-width: 768px) {
+    width: 90px;
+    height: 40px;
+    padding: 0 12px;
+    margin-right: 12px;
+    font-size: 14px;
+  }
+  
   &:active {
     background: linear-gradient(to bottom, #a0a0a0 0%, #c0c0c0 100%);
     border: 2px solid #808080;
@@ -74,6 +92,17 @@ const TaskbarItems = styled.div`
   align-items: center;
   gap: 4px;
   flex: 1;
+  
+  @media (max-width: 768px) {
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `;
 
 const TaskbarItem = styled.div<{ isActive: boolean }>`
@@ -97,6 +126,14 @@ const TaskbarItem = styled.div<{ isActive: boolean }>`
     ? 'inset 1px 1px 0px rgba(0, 0, 0, 0.1)' 
     : 'inset 1px 1px 0px rgba(255, 255, 255, 0.3)'
   };
+  
+  @media (max-width: 768px) {
+    height: 40px;
+    min-width: 120px;
+    padding: 0 12px;
+    font-size: 12px;
+    flex-shrink: 0;
+  }
   
   &:hover {
     background: linear-gradient(to bottom, #f0f0f0 0%, #d0d0d0 100%);
@@ -206,6 +243,14 @@ const DesktopTitle = styled.div`
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
   z-index: 1;
   pointer-events: none;
+  
+  @media (max-width: 768px) {
+    font-size: 32px;
+    top: 20px;
+    padding: 0 20px;
+    text-align: center;
+    word-wrap: break-word;
+  }
 `;
 
 const Desktop: React.FC = () => {
@@ -251,15 +296,67 @@ const Desktop: React.FC = () => {
     background: 'dog-pattern'
   });
 
+  // Effect to reposition icons for mobile on mount and resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        // Reposition icons horizontally at the top for mobile
+        const iconSpacing = Math.min(90, (window.innerWidth - 40) / 4); // Responsive spacing
+        setDesktopState(prev => ({
+          ...prev,
+          icons: prev.icons.map((icon, index) => ({
+            ...icon,
+            position: { 
+              x: 20 + (index * iconSpacing), // Space icons horizontally with responsive spacing
+              y: 20 // Position at the top
+            }
+          }))
+        }));
+      } else {
+        // Reset to original vertical layout for desktop
+        setDesktopState(prev => ({
+          ...prev,
+          icons: [
+            { ...prev.icons[0], position: { x: 30, y: 100 } },
+            { ...prev.icons[1], position: { x: 30, y: 200 } },
+            { ...prev.icons[2], position: { x: 30, y: 300 } },
+            { ...prev.icons[3], position: { x: 30, y: 400 } }
+          ]
+        }));
+      }
+    };
+
+    // Set initial position
+    handleResize();
+
+    // Listen for resize events
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const handleIconMove = useCallback((iconId: string, x: number, y: number) => {
     setDesktopState(prev => {
       const iconIndex = prev.icons.findIndex(icon => icon.id === iconId);
       if (iconIndex === -1) return prev;
       
+      const isMobile = window.innerWidth <= 768;
+      let constrainedX = x;
+      let constrainedY = y;
+      
+      if (isMobile) {
+        // On mobile, constrain icons to stay within screen bounds
+        const iconWidth = 100; // Approximate icon width
+        const iconHeight = 100; // Approximate icon height
+        const taskbarHeight = 50;
+        
+        constrainedX = Math.max(0, Math.min(x, window.innerWidth - iconWidth));
+        constrainedY = Math.max(0, Math.min(y, window.innerHeight - iconHeight - taskbarHeight));
+      }
+      
       const newIcons = [...prev.icons];
       newIcons[iconIndex] = {
         ...newIcons[iconIndex],
-        position: { x, y }
+        position: { x: constrainedX, y: constrainedY }
       };
       
       return {
@@ -414,12 +511,13 @@ const Desktop: React.FC = () => {
 
     if (icon.id === 'music') {
       // Open music window
+      const isMobile = window.innerWidth <= 768;
       const newWindow: WindowType = {
         id: `music-${Date.now()}`,
         title: 'Music',
         type: 'app',
-        position: { x: 150, y: 150 },
-        size: { width: 600, height: 500 },
+        position: isMobile ? { x: 10, y: 10 } : { x: 150, y: 150 },
+        size: isMobile ? { width: window.innerWidth - 20, height: window.innerHeight - 100 } : { width: 600, height: 500 },
         isMinimized: false,
         isMaximized: false,
         isOpen: true,
@@ -434,12 +532,13 @@ const Desktop: React.FC = () => {
       }));
     } else if (icon.id === 'the-archive') {
       // Open photo gallery for the Archive icon
+      const isMobile = window.innerWidth <= 768;
       const newWindow: WindowType = {
         id: `window-${icon.id}`,
         title: 'ishv4ra',
         type: 'app',
-        position: { x: 100, y: 100 },
-        size: { width: 1000, height: 700 },
+        position: isMobile ? { x: 10, y: 10 } : { x: 100, y: 100 },
+        size: isMobile ? { width: window.innerWidth - 20, height: window.innerHeight - 100 } : { width: 1000, height: 700 },
         isMinimized: false,
         isMaximized: false,
         isOpen: true,
@@ -454,12 +553,13 @@ const Desktop: React.FC = () => {
       }));
     } else if (icon.id === 'demos') {
       // Open demos player
+      const isMobile = window.innerWidth <= 768;
       const newWindow: WindowType = {
         id: `window-${icon.id}`,
         title: icon.name,
         type: 'app',
-        position: { x: 100, y: 100 },
-        size: { width: 800, height: 500 },
+        position: isMobile ? { x: 10, y: 10 } : { x: 100, y: 100 },
+        size: isMobile ? { width: window.innerWidth - 20, height: window.innerHeight - 100 } : { width: 800, height: 500 },
         isMinimized: false,
         isMaximized: false,
         isOpen: true,
@@ -474,12 +574,13 @@ const Desktop: React.FC = () => {
       }));
     } else if (icon.id === 'sculpter') {
       // Open appointment maker for playday cuts
+      const isMobile = window.innerWidth <= 768;
       const newWindow: WindowType = {
         id: `window-${icon.id}`,
         title: icon.name,
         type: 'app',
-        position: { x: 200, y: 150 },
-        size: { width: 500, height: 600 },
+        position: isMobile ? { x: 10, y: 10 } : { x: 200, y: 150 },
+        size: isMobile ? { width: window.innerWidth - 20, height: window.innerHeight - 100 } : { width: 500, height: 600 },
         isMinimized: false,
         isMaximized: false,
         isOpen: true,

@@ -57,14 +57,14 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
       height: '100%', 
       display: 'flex',
       flexDirection: 'column',
-      background: '#000000',
-      color: 'white'
+      background: '#ffffff',
+      color: '#000000'
     }}>
       {/* Header */}
       <div style={{ 
         padding: '15px 20px',
-        background: '#222222',
-        borderBottom: '1px solid #444444',
+        background: '#f0f0f0',
+        borderBottom: '1px solid #cccccc',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center'
@@ -75,8 +75,8 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
             disabled={!hasPrev}
             style={{
               padding: '8px 16px',
-              background: hasPrev ? '#4CAF50' : '#666666',
-              color: 'white',
+              background: hasPrev ? '#4CAF50' : '#cccccc',
+              color: hasPrev ? 'white' : '#666666',
               border: 'none',
               borderRadius: '4px',
               cursor: hasPrev ? 'pointer' : 'not-allowed',
@@ -90,8 +90,8 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
             disabled={!hasNext}
             style={{
               padding: '8px 16px',
-              background: hasNext ? '#4CAF50' : '#666666',
-              color: 'white',
+              background: hasNext ? '#4CAF50' : '#cccccc',
+              color: hasNext ? 'white' : '#666666',
               border: 'none',
               borderRadius: '4px',
               cursor: hasNext ? 'pointer' : 'not-allowed',
@@ -125,7 +125,7 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
         justifyContent: 'center',
         padding: '20px',
         overflow: 'auto',
-        background: '#000000'
+        background: '#ffffff'
       }}>
         <div style={{
           position: 'relative',
@@ -144,7 +144,7 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
               width: 'auto',
               height: 'auto',
               objectFit: 'contain',
-              boxShadow: '0 0 20px rgba(0, 0, 0, 0.8)',
+              boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)',
               borderRadius: '4px'
             }}
             onLoad={(e) => {
@@ -158,7 +158,7 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
               img.style.display = 'none';
               const parent = img.parentElement;
               if (parent) {
-                parent.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #fff; font-size: 18px; text-align: center;"><div>Image Failed to Load</div><div style="font-size: 14px; margin-top: 10px; color: #999;">Check the image path: {photo.path}</div></div>';
+                parent.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #000; font-size: 18px; text-align: center;"><div>Image Failed to Load</div><div style="font-size: 14px; margin-top: 10px; color: #666;">Check the image path: {photo.path}</div></div>';
               }
             }}
           />

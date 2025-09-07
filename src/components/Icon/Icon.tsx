@@ -27,6 +27,14 @@ const IconContainer = styled.div<{ isSelected: boolean; x: number; y: number; is
   transform: ${props => props.isDragging ? 'translateZ(0)' : 'scale(1)'};
   backface-visibility: hidden;
   
+  @media (max-width: 768px) {
+    padding: 8px;
+    min-height: 80px;
+    min-width: 80px;
+    touch-action: none;
+    flex-shrink: 0;
+  }
+  
   &:hover {
     background-color: rgba(255, 255, 255, 0.1);
     transform: ${props => props.isDragging ? 'translateZ(0)' : 'scale(1.05)'};
@@ -58,6 +66,12 @@ const IconCircle = styled.div<{ color: string; isImage: boolean }>`
   color: white;
   font-weight: bold;
   overflow: hidden;
+  
+  @media (max-width: 768px) {
+    width: 72px;
+    height: 72px;
+    font-size: ${props => props.isImage ? '0' : '36px'};
+  }
 `;
 
 const IconLabel = styled.div`
@@ -68,17 +82,26 @@ const IconLabel = styled.div`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   max-width: 80px;
   word-wrap: break-word;
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+    max-width: 100px;
+    line-height: 1.2;
+  }
 `;
 
 const Icon: React.FC<IconProps> = ({ icon, onClick, onMove, isSelected = false }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [dragDistance, setDragDistance] = useState(0);
+  const [touchUsed, setTouchUsed] = useState(false);
+  const [lastClickTime, setLastClickTime] = useState(0);
   
   const iconRef = useRef<HTMLDivElement>(null);
   const isDraggingRef = useRef(false);
   const dragOffsetRef = useRef({ x: 0, y: 0 });
   const startPosRef = useRef({ x: 0, y: 0 });
+  const clickHandledRef = useRef(false);
 
   const isImageIcon = icon.icon.includes('.png') || icon.icon.includes('.jpg') || icon.icon.includes('.jpeg') || icon.icon.includes('.gif');
 
@@ -145,11 +168,108 @@ const Icon: React.FC<IconProps> = ({ icon, onClick, onMove, isSelected = false }
   }, []);
 
   const handleClick = useCallback((e: React.MouseEvent) => {
-    // Only trigger click if we didn't drag (drag distance < 5px)
-    if (dragDistance < 5) {
-      onClick();
+    // Only handle mouse clicks on desktop
+    if (window.innerWidth <= 768) {
+      return;
     }
-  }, [onClick, dragDistance]);
+    
+    const now = Date.now();
+    // Only trigger click if we didn't drag (drag distance < 5px) and it's not a rapid double-click
+    if (dragDistance < 5 && (now - lastClickTime) > 300 && !clickHandledRef.current) {
+      clickHandledRef.current = true;
+      setLastClickTime(now);
+      onClick();
+      
+      // Reset the click handled flag after a short delay
+      setTimeout(() => {
+        clickHandledRef.current = false;
+      }, 500);
+    }
+  }, [onClick, dragDistance, lastClickTime]);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchUsed(true);
+    const touch = e.touches[0];
+    const rect = iconRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const offsetX = touch.clientX - rect.left;
+    const offsetY = touch.clientY - rect.top;
+    
+    // Store start position for drag distance calculation
+    startPosRef.current = { x: touch.clientX, y: touch.clientY };
+    
+    dragOffsetRef.current = { x: offsetX, y: offsetY };
+    setDragOffset({ x: offsetX, y: offsetY });
+    setDragDistance(0);
+    isDraggingRef.current = true;
+    setIsDragging(true);
+    
+    // Prevent default touch behavior
+    e.preventDefault();
+  }, []);
+
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (isDraggingRef.current) {
+      const touch = e.touches[0];
+      const newX = touch.clientX - dragOffsetRef.current.x;
+      const newY = touch.clientY - dragOffsetRef.current.y;
+      
+      // Calculate drag distance to determine if it's a drag or tap
+      const distance = Math.sqrt(
+        Math.pow(touch.clientX - startPosRef.current.x, 2) + 
+        Math.pow(touch.clientY - startPosRef.current.y, 2)
+      );
+      setDragDistance(distance);
+      
+      // Use requestAnimationFrame for smooth updates
+      requestAnimationFrame(() => {
+        onMove(icon.id, newX, newY);
+      });
+    }
+  }, [icon.id, onMove]);
+
+
+  // Document touch end handler for dragging
+  const handleDocumentTouchEnd = useCallback((e: TouchEvent) => {
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    // Reset touchUsed after a short delay to allow for proper click handling
+    setTimeout(() => setTouchUsed(false), 100);
+  }, []);
+
+  // Set up touch event listeners
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleDocumentTouchEnd, { passive: true });
+      
+      return () => {
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleDocumentTouchEnd);
+      };
+    }
+  }, [isDragging, handleTouchMove, handleDocumentTouchEnd]);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    const now = Date.now();
+    // Only trigger click if we didn't drag (drag distance < 10px for touch) and it's not a rapid double-click
+    if (dragDistance < 10 && (now - lastClickTime) > 300 && !clickHandledRef.current) {
+      clickHandledRef.current = true;
+      setLastClickTime(now);
+      onClick();
+      
+      // Reset the click handled flag after a short delay
+      setTimeout(() => {
+        clickHandledRef.current = false;
+      }, 500);
+    }
+    
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    // Reset touchUsed after a short delay to allow for proper click handling
+    setTimeout(() => setTouchUsed(false), 100);
+  }, [onClick, dragDistance, lastClickTime]);
 
   return (
     <IconContainer 
@@ -158,6 +278,8 @@ const Icon: React.FC<IconProps> = ({ icon, onClick, onMove, isSelected = false }
       y={icon.position.y}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       isSelected={isSelected}
       isDragging={isDragging}
     >

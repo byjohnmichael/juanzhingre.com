@@ -1,34 +1,33 @@
 // Auto-generated photo data from images folder
 export const photoCollections = [
   {
-    "id": "california-summer",
-    "name": "california-summer",
-    "path": "/images/california-summer/",
+    "id": "oceanside",
+    "name": "oceanside",
+    "path": "/images/oceanside/",
     "photoCount": 27
   },
   {
-    "id": "fall---spring",
-    "name": "fall-&-spring",
-    "path": "/images/fall-&-spring/",
+    "id": "springtober",
+    "name": "springtober",
+    "path": "/images/springtober/",
     "photoCount": 10
   },
-
   {
-    "id": "mother",
-    "name": "mother",
-    "path": "/images/mother/",
+    "id": "mum",
+    "name": "mum",
+    "path": "/images/mum/",
     "photoCount": 5
   },
   {
-    "id": "night-shoots",
-    "name": "night-shoots",
-    "path": "/images/night-shoots/",
+    "id": "midnight",
+    "name": "midnight",
+    "path": "/images/midnight/",
     "photoCount": 19
   },
   {
-    "id": "obscure",
-    "name": "obscure",
-    "path": "/images/obscure/",
+    "id": "phoenix",
+    "name": "phoenix",
+    "path": "/images/phoenix/",
     "photoCount": 5
   },
   {
@@ -43,224 +42,224 @@ export const photoData = [
   {
     "id": "1",
     "name": "IMG 0219",
-    "path": "/images/california-summer/IMG_0219.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_0219.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "2",
     "name": "IMG 0220",
-    "path": "/images/california-summer/IMG_0220.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_0220.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "3",
     "name": "IMG 0221",
-    "path": "/images/california-summer/IMG_0221.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_0221.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "4",
     "name": "IMG 0223",
-    "path": "/images/california-summer/IMG_0223.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_0223.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "5",
     "name": "IMG 0227",
-    "path": "/images/california-summer/IMG_0227.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_0227.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "6",
     "name": "IMG 5205",
-    "path": "/images/california-summer/IMG_5205.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5205.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "7",
     "name": "IMG 5206",
-    "path": "/images/california-summer/IMG_5206.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5206.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "8",
     "name": "IMG 5207",
-    "path": "/images/california-summer/IMG_5207.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5207.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "9",
     "name": "IMG 5209",
-    "path": "/images/california-summer/IMG_5209.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5209.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "10",
     "name": "IMG 5212",
-    "path": "/images/california-summer/IMG_5212.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5212.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "11",
     "name": "IMG 5213",
-    "path": "/images/california-summer/IMG_5213.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5213.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "12",
     "name": "IMG 5215",
-    "path": "/images/california-summer/IMG_5215.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5215.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "13",
     "name": "IMG 5216",
-    "path": "/images/california-summer/IMG_5216.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5216.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "14",
     "name": "IMG 5217",
-    "path": "/images/california-summer/IMG_5217.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5217.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "15",
     "name": "IMG 5220",
-    "path": "/images/california-summer/IMG_5220.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5220.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "16",
     "name": "IMG 5222",
-    "path": "/images/california-summer/IMG_5222.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5222.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "17",
     "name": "IMG 5224",
-    "path": "/images/california-summer/IMG_5224.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5224.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "18",
     "name": "IMG 5228",
-    "path": "/images/california-summer/IMG_5228.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5228.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "19",
     "name": "IMG 5230",
-    "path": "/images/california-summer/IMG_5230.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5230.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "20",
     "name": "IMG 5232",
-    "path": "/images/california-summer/IMG_5232.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5232.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "21",
     "name": "IMG 5234",
-    "path": "/images/california-summer/IMG_5234.jpg",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5234.jpg",
+    "collection": "oceanside"
   },
   {
     "id": "22",
     "name": "IMG 5237",
-    "path": "/images/california-summer/IMG_5237.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5237.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "23",
     "name": "IMG 5240",
-    "path": "/images/california-summer/IMG_5240.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5240.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "24",
     "name": "IMG 5241",
-    "path": "/images/california-summer/IMG_5241.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5241.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "25",
     "name": "IMG 5243",
-    "path": "/images/california-summer/IMG_5243.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5243.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "26",
     "name": "IMG 5245",
-    "path": "/images/california-summer/IMG_5245.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5245.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "27",
     "name": "IMG 5363",
-    "path": "/images/california-summer/IMG_5363.JPG",
-    "collection": "california-summer"
+    "path": "/images/oceanside/IMG_5363.JPG",
+    "collection": "oceanside"
   },
   {
     "id": "28",
     "name": "BE81B196 1775 4A80 A7EC BE03F055EAAF",
-    "path": "/images/fall-&-spring/BE81B196-1775-4A80-A7EC-BE03F055EAAF.JPG",
-    "collection": "fall---spring"
+    "path": "/images/springtober/BE81B196-1775-4A80-A7EC-BE03F055EAAF.JPG",
+    "collection": "springtober"
   },
   {
     "id": "29",
     "name": "IMG 2625",
-    "path": "/images/fall-&-spring/IMG_2625.JPG",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_2625.JPG",
+    "collection": "springtober"
   },
   {
     "id": "30",
     "name": "IMG 2626",
-    "path": "/images/fall-&-spring/IMG_2626.JPG",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_2626.JPG",
+    "collection": "springtober"
   },
   {
     "id": "31",
     "name": "IMG 6681",
-    "path": "/images/fall-&-spring/IMG_6681.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6681.jpg",
+    "collection": "springtober"
   },
   {
     "id": "32",
     "name": "IMG 6684",
-    "path": "/images/fall-&-spring/IMG_6684.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6684.jpg",
+    "collection": "springtober"
   },
   {
     "id": "33",
     "name": "IMG 6685",
-    "path": "/images/fall-&-spring/IMG_6685.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6685.jpg",
+    "collection": "springtober"
   },
   {
     "id": "34",
     "name": "IMG 6686",
-    "path": "/images/fall-&-spring/IMG_6686.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6686.jpg",
+    "collection": "springtober"
   },
   {
     "id": "35",
     "name": "IMG 6688",
-    "path": "/images/fall-&-spring/IMG_6688.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6688.jpg",
+    "collection": "springtober"
   },
   {
     "id": "36",
     "name": "IMG 6689",
-    "path": "/images/fall-&-spring/IMG_6689.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6689.jpg",
+    "collection": "springtober"
   },
   {
     "id": "37",
     "name": "IMG 6694",
-    "path": "/images/fall-&-spring/IMG_6694.jpg",
-    "collection": "fall---spring"
+    "path": "/images/springtober/IMG_6694.jpg",
+    "collection": "springtober"
   },
   {
     "id": "38",
@@ -1087,176 +1086,176 @@ export const photoData = [
   {
     "id": "175",
     "name": "IMG 2850",
-    "path": "/images/mother/IMG_2850.jpg",
-    "collection": "mother"
+    "path": "/images/mum/IMG_2850.jpg",
+    "collection": "mum"
   },
   {
     "id": "176",
     "name": "IMG 2852",
-    "path": "/images/mother/IMG_2852.jpg",
-    "collection": "mother"
+    "path": "/images/mum/IMG_2852.jpg",
+    "collection": "mum"
   },
   {
     "id": "177",
     "name": "IMG 2853",
-    "path": "/images/mother/IMG_2853.jpg",
-    "collection": "mother"
+    "path": "/images/mum/IMG_2853.jpg",
+    "collection": "mum"
   },
   {
     "id": "178",
     "name": "IMG 2859",
-    "path": "/images/mother/IMG_2859.jpg",
-    "collection": "mother"
+    "path": "/images/mum/IMG_2859.jpg",
+    "collection": "mum"
   },
   {
     "id": "179",
     "name": "IMG 2860",
-    "path": "/images/mother/IMG_2860.jpg",
-    "collection": "mother"
+    "path": "/images/mum/IMG_2860.jpg",
+    "collection": "mum"
   },
   {
     "id": "180",
     "name": "8721D01D CD81 4924 ABAB 49E7E00C3F6B",
-    "path": "/images/night-shoots/8721D01D-CD81-4924-ABAB-49E7E00C3F6B.JPG",
-    "collection": "night-shoots"
+    "path": "/images/midnight/8721D01D-CD81-4924-ABAB-49E7E00C3F6B.JPG",
+    "collection": "midnight"
   },
   {
     "id": "181",
     "name": "8F032FBA 6B07 4FE2 9DD4 BDB38E40D1B1",
-    "path": "/images/night-shoots/8F032FBA-6B07-4FE2-9DD4-BDB38E40D1B1.JPG",
-    "collection": "night-shoots"
+    "path": "/images/midnight/8F032FBA-6B07-4FE2-9DD4-BDB38E40D1B1.JPG",
+    "collection": "midnight"
   },
   {
     "id": "182",
     "name": "IMG 1532",
-    "path": "/images/night-shoots/IMG_1532.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1532.jpg",
+    "collection": "midnight"
   },
   {
     "id": "183",
     "name": "IMG 1533",
-    "path": "/images/night-shoots/IMG_1533.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1533.jpg",
+    "collection": "midnight"
   },
   {
     "id": "184",
     "name": "IMG 1535",
-    "path": "/images/night-shoots/IMG_1535.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1535.jpg",
+    "collection": "midnight"
   },
   {
     "id": "185",
     "name": "IMG 1537",
-    "path": "/images/night-shoots/IMG_1537.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1537.jpg",
+    "collection": "midnight"
   },
   {
     "id": "186",
     "name": "IMG 1540",
-    "path": "/images/night-shoots/IMG_1540.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1540.jpg",
+    "collection": "midnight"
   },
   {
     "id": "187",
     "name": "IMG 1541",
-    "path": "/images/night-shoots/IMG_1541.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1541.jpg",
+    "collection": "midnight"
   },
   {
     "id": "188",
     "name": "IMG 1733",
-    "path": "/images/night-shoots/IMG_1733.JPG",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_1733.JPG",
+    "collection": "midnight"
   },
   {
     "id": "189",
     "name": "IMG 6698",
-    "path": "/images/night-shoots/IMG_6698.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6698.jpg",
+    "collection": "midnight"
   },
   {
     "id": "190",
     "name": "IMG 6699",
-    "path": "/images/night-shoots/IMG_6699.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6699.jpg",
+    "collection": "midnight"
   },
   {
     "id": "191",
     "name": "IMG 6700",
-    "path": "/images/night-shoots/IMG_6700.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6700.jpg",
+    "collection": "midnight"
   },
   {
     "id": "192",
     "name": "IMG 6704",
-    "path": "/images/night-shoots/IMG_6704.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6704.jpg",
+    "collection": "midnight"
   },
   {
     "id": "193",
     "name": "IMG 6705",
-    "path": "/images/night-shoots/IMG_6705.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6705.jpg",
+    "collection": "midnight"
   },
   {
     "id": "194",
     "name": "IMG 6706",
-    "path": "/images/night-shoots/IMG_6706.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6706.jpg",
+    "collection": "midnight"
   },
   {
     "id": "195",
     "name": "IMG 6708",
-    "path": "/images/night-shoots/IMG_6708.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6708.jpg",
+    "collection": "midnight"
   },
   {
     "id": "196",
     "name": "IMG 6709",
-    "path": "/images/night-shoots/IMG_6709.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6709.jpg",
+    "collection": "midnight"
   },
   {
     "id": "197",
     "name": "IMG 6712",
-    "path": "/images/night-shoots/IMG_6712.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6712.jpg",
+    "collection": "midnight"
   },
   {
     "id": "198",
     "name": "IMG 6715",
-    "path": "/images/night-shoots/IMG_6715.jpg",
-    "collection": "night-shoots"
+    "path": "/images/midnight/IMG_6715.jpg",
+    "collection": "midnight"
   },
   {
     "id": "199",
     "name": "IMG 1530",
-    "path": "/images/obscure/IMG_1530.jpg",
-    "collection": "obscure"
+    "path": "/images/phoenix/IMG_1530.jpg",
+    "collection": "phoenix"
   },
   {
     "id": "200",
     "name": "IMG 1550",
-    "path": "/images/obscure/IMG_1550.jpg",
-    "collection": "obscure"
+    "path": "/images/phoenix/IMG_1550.jpg",
+    "collection": "phoenix"
   },
   {
     "id": "201",
     "name": "IMG 1551",
-    "path": "/images/obscure/IMG_1551.jpg",
-    "collection": "obscure"
+    "path": "/images/phoenix/IMG_1551.jpg",
+    "collection": "phoenix"
   },
   {
     "id": "202",
     "name": "IMG 9067",
-    "path": "/images/obscure/IMG_9067.JPG",
-    "collection": "obscure"
+    "path": "/images/phoenix/IMG_9067.JPG",
+    "collection": "phoenix"
   },
   {
     "id": "203",
     "name": "IMG 9068",
-    "path": "/images/obscure/IMG_9068.jpg",
-    "collection": "obscure"
+    "path": "/images/phoenix/IMG_9068.jpg",
+    "collection": "phoenix"
   },
   {
     "id": "204",

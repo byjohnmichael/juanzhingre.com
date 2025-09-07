@@ -9,7 +9,7 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  const [selectedTime, setSelectedTime] = useState('');
+  const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -23,16 +23,24 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
     );
   };
 
+  const handleTimeToggle = (time: string) => {
+    setSelectedTimes(prev => 
+      prev.includes(time) 
+        ? prev.filter(t => t !== time)
+        : [...prev, time]
+    );
+  };
+
   const handleSchedule = async () => {
-    if (name && phone && selectedDays.length > 0 && selectedTime) {
+    if (name && phone && selectedDays.length > 0 && selectedTimes.length > 0) {
       setIsSubmitting(true);
       
       try {
         // Send email using EmailJS
         const templateParams = {
           name: name,
-          time: selectedTime,
-          message: `${name} wants a cut, this is their phone number: ${phone}\n\nAvailable Days: ${selectedDays.join(', ')}\nTime Preference: ${selectedTime}`
+          time: selectedTimes.join(', '),
+          message: `${name} wants a cut, this is their phone number: ${phone}\n\nAvailable Days: ${selectedDays.join(', ')}\nTime Preference: ${selectedTimes.join(', ')}`
         };
 
         await emailjs.send(
@@ -42,10 +50,10 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
           'gyiS7YPcgxpQGxBch' // Replace with your EmailJS public key
         );
 
-        alert(`Appointment scheduled!\nName: ${name}\nPhone: ${phone}\nDays: ${selectedDays.join(', ')}\nTime: ${selectedTime}\n\nEmail notification sent!`);
+        alert(`Appointment scheduled!\nName: ${name}\nPhone: ${phone}\nDays: ${selectedDays.join(', ')}\nTime: ${selectedTimes.join(', ')}\n\nEmail notification sent!`);
       } catch (error) {
         console.error('Email error:', error);
-        alert(`Appointment scheduled!\nName: ${name}\nPhone: ${phone}\nDays: ${selectedDays.join(', ')}\nTime: ${selectedTime}\n\nNote: Email notification failed to send.`);
+        alert(`Appointment scheduled!\nName: ${name}\nPhone: ${phone}\nDays: ${selectedDays.join(', ')}\nTime: ${selectedTimes.join(', ')}\n\nNote: Email notification failed to send.`);
       } finally {
         setIsSubmitting(false);
       }
@@ -54,7 +62,7 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
       setName('');
       setPhone('');
       setSelectedDays([]);
-      setSelectedTime('');
+      setSelectedTimes([]);
     } else {
       alert('Please fill in all fields');
     }
@@ -73,21 +81,22 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
       overflow: 'auto'
     }}>
       <h1 style={{
-        fontSize: '24px',
+        fontSize: window.innerWidth <= 768 ? '20px' : '24px',
         fontWeight: 'bold',
-        margin: '0 0 30px 0',
+        margin: '0 0 20px 0',
         color: '#000',
-        textAlign: 'center'
+        textAlign: 'center',
+        lineHeight: '1.2'
       }}>
         Schedule an appointment
       </h1>
       
       <div style={{
         width: '100%',
-        maxWidth: '400px',
+        maxWidth: window.innerWidth <= 768 ? '100%' : '400px',
         display: 'flex',
         flexDirection: 'column',
-        gap: '20px'
+        gap: window.innerWidth <= 768 ? '15px' : '20px'
       }}>
         {/* Name Field */}
         <div>
@@ -95,7 +104,7 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             display: 'block', 
             marginBottom: '5px', 
             fontWeight: 'bold',
-            fontSize: '14px'
+            fontSize: window.innerWidth <= 768 ? '16px' : '14px'
           }}>
             Name:
           </label>
@@ -106,12 +115,12 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             disabled={isSubmitting}
             style={{
               width: '100%',
-              padding: '8px',
+              padding: window.innerWidth <= 768 ? '12px' : '8px',
               border: '2px solid #808080',
               borderTop: '2px solid #ffffff',
               borderLeft: '2px solid #ffffff',
               background: isSubmitting ? '#f0f0f0' : '#ffffff',
-              fontSize: '14px',
+              fontSize: window.innerWidth <= 768 ? '16px' : '14px',
               boxSizing: 'border-box'
             }}
           />
@@ -123,7 +132,7 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             display: 'block', 
             marginBottom: '5px', 
             fontWeight: 'bold',
-            fontSize: '14px'
+            fontSize: window.innerWidth <= 768 ? '16px' : '14px'
           }}>
             Phone Number:
           </label>
@@ -134,12 +143,12 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             disabled={isSubmitting}
             style={{
               width: '100%',
-              padding: '8px',
+              padding: window.innerWidth <= 768 ? '12px' : '8px',
               border: '2px solid #808080',
               borderTop: '2px solid #ffffff',
               borderLeft: '2px solid #ffffff',
               background: isSubmitting ? '#f0f0f0' : '#ffffff',
-              fontSize: '14px',
+              fontSize: window.innerWidth <= 768 ? '16px' : '14px',
               boxSizing: 'border-box'
             }}
           />
@@ -151,33 +160,37 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             display: 'block', 
             marginBottom: '10px', 
             fontWeight: 'bold',
-            fontSize: '14px'
+            fontSize: window.innerWidth <= 768 ? '16px' : '14px'
           }}>
             Availability:
           </label>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(2, 1fr)',
-            gap: '8px'
+            gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : 'repeat(2, 1fr)',
+            gap: window.innerWidth <= 768 ? '12px' : '8px'
           }}>
             {days.map(day => (
               <label key={day} style={{
                 display: 'flex',
                 alignItems: 'center',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                padding: '4px 8px',
+                fontSize: window.innerWidth <= 768 ? '16px' : '14px',
+                padding: window.innerWidth <= 768 ? '12px 16px' : '8px 12px',
                 borderRadius: '4px',
-                transition: 'background-color 0.2s',
-                opacity: isSubmitting ? 0.6 : 1
+                transition: 'all 0.2s',
+                opacity: isSubmitting ? 0.6 : 1,
+                backgroundColor: selectedDays.includes(day) ? '#e8f5e8' : 'transparent',
+                border: selectedDays.includes(day) ? '2px solid #4CAF50' : '2px solid transparent',
+                fontWeight: selectedDays.includes(day) ? 'bold' : 'normal',
+                minHeight: window.innerWidth <= 768 ? '48px' : 'auto'
               }}
               onMouseEnter={(e) => {
                 if (!isSubmitting) {
-                  e.currentTarget.style.backgroundColor = '#f0f0f0';
+                  e.currentTarget.style.backgroundColor = selectedDays.includes(day) ? '#d4edda' : '#f0f0f0';
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.backgroundColor = selectedDays.includes(day) ? '#e8f5e8' : 'transparent';
               }}>
                 <input
                   type="checkbox"
@@ -185,11 +198,12 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
                   onChange={() => handleDayToggle(day)}
                   disabled={isSubmitting}
                   style={{
-                    marginRight: '8px',
-                    width: '16px',
-                    height: '16px',
+                    marginRight: '10px',
+                    width: window.innerWidth <= 768 ? '24px' : '18px',
+                    height: window.innerWidth <= 768 ? '24px' : '18px',
                     cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                    accentColor: '#4CAF50'
+                    accentColor: '#4CAF50',
+                    transform: window.innerWidth <= 768 ? 'scale(1.5)' : 'scale(1.2)'
                   }}
                 />
                 {day}
@@ -204,13 +218,13 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             display: 'block', 
             marginBottom: '10px', 
             fontWeight: 'bold',
-            fontSize: '14px'
+            fontSize: window.innerWidth <= 768 ? '16px' : '14px'
           }}>
             Time Preference:
           </label>
           <div style={{
             display: 'flex',
-            gap: '10px',
+            gap: window.innerWidth <= 768 ? '12px' : '10px',
             flexWrap: 'wrap'
           }}>
             {timeSlots.map(time => (
@@ -218,33 +232,36 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
                 display: 'flex',
                 alignItems: 'center',
                 cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                fontSize: '14px',
-                padding: '4px 8px',
+                fontSize: window.innerWidth <= 768 ? '16px' : '14px',
+                padding: window.innerWidth <= 768 ? '12px 16px' : '8px 12px',
                 borderRadius: '4px',
-                transition: 'background-color 0.2s',
-                opacity: isSubmitting ? 0.6 : 1
+                transition: 'all 0.2s',
+                opacity: isSubmitting ? 0.6 : 1,
+                backgroundColor: selectedTimes.includes(time) ? '#e8f5e8' : 'transparent',
+                border: selectedTimes.includes(time) ? '2px solid #4CAF50' : '2px solid transparent',
+                fontWeight: selectedTimes.includes(time) ? 'bold' : 'normal',
+                minHeight: window.innerWidth <= 768 ? '48px' : 'auto'
               }}
               onMouseEnter={(e) => {
                 if (!isSubmitting) {
-                  e.currentTarget.style.backgroundColor = '#f0f0f0';
+                  e.currentTarget.style.backgroundColor = selectedTimes.includes(time) ? '#d4edda' : '#f0f0f0';
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.backgroundColor = selectedTimes.includes(time) ? '#e8f5e8' : 'transparent';
               }}>
                 <input
-                  type="radio"
-                  name="time"
-                  value={time}
-                  checked={selectedTime === time}
-                  onChange={(e) => setSelectedTime(e.target.value)}
+                  type="checkbox"
+                  checked={selectedTimes.includes(time)}
+                  onChange={() => handleTimeToggle(time)}
                   disabled={isSubmitting}
                   style={{
-                    marginRight: '5px',
-                    width: '16px',
-                    height: '16px',
+                    marginRight: '10px',
+                    width: window.innerWidth <= 768 ? '24px' : '18px',
+                    height: window.innerWidth <= 768 ? '24px' : '18px',
                     cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                    accentColor: '#4CAF50'
+                    accentColor: '#4CAF50',
+                    transform: window.innerWidth <= 768 ? 'scale(1.5)' : 'scale(1.2)'
                   }}
                 />
                 {time}
@@ -258,7 +275,7 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
           onClick={handleSchedule}
           disabled={isSubmitting}
           style={{
-            padding: '12px 24px',
+            padding: window.innerWidth <= 768 ? '16px 32px' : '12px 24px',
             background: isSubmitting ? '#cccccc' : '#4CAF50',
             color: 'white',
             border: '2px solid #ffffff',
@@ -266,11 +283,13 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             borderBottom: '2px solid #808080',
             borderLeft: '2px solid #ffffff',
             cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            fontSize: '16px',
+            fontSize: window.innerWidth <= 768 ? '18px' : '16px',
             fontWeight: 'bold',
             alignSelf: 'center',
             boxShadow: 'inset 1px 1px 0px rgba(255, 255, 255, 0.3)',
-            marginTop: '10px'
+            marginTop: '10px',
+            minHeight: window.innerWidth <= 768 ? '56px' : 'auto',
+            minWidth: window.innerWidth <= 768 ? '200px' : 'auto'
           }}
           onMouseEnter={(e) => {
             if (!isSubmitting) {

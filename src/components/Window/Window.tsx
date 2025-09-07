@@ -40,6 +40,14 @@ const WindowContainer = styled.div<{
     transition: none;
     will-change: left, top;
   }
+  
+  @media (max-width: 768px) {
+    /* On mobile, ensure windows don't go off screen */
+    left: ${props => props.isMinimized ? -1000 : Math.max(0, Math.min(props.x, window.innerWidth - props.width))}px !important;
+    top: ${props => props.isMinimized ? -1000 : Math.max(0, Math.min(props.y, window.innerHeight - props.height - 50))}px !important;
+    width: ${props => props.isMaximized ? '100vw' : Math.min(props.width, window.innerWidth - 20)}px;
+    height: ${props => props.isMaximized ? 'calc(100vh - 50px)' : Math.min(props.height, window.innerHeight - 100)}px;
+  }
 `;
 
 const Window: React.FC<WindowProps> = ({ 

@@ -19,7 +19,7 @@ const FolderContent: React.FC<FolderContentProps> = ({ folderId, folderName }) =
         return {
           icon: '📚',
           title: 'ishv4ra',
-          description: 'A curated collection of memories, documents, and important files. Your digital time capsule.'
+          description: 'A curated collection of memories, documents, and im portant files. Your digital time capsule.'
         };
       
       case 'sculpter':
