@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { photoData } from '../../data/photos';
 
 interface Photo {
@@ -19,6 +19,38 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
   const currentIndex = photos.findIndex(p => p.id === photo.id);
   const hasPrev = currentIndex > 0;
   const hasNext = currentIndex < photos.length - 1;
+  const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set());
+
+  // Preload adjacent images
+  useEffect(() => {
+    const preloadImage = (src: string) => {
+      const img = new Image();
+      img.onload = () => {
+        setPreloadedImages(prev => {
+          const newSet = new Set(prev);
+          newSet.add(src);
+          return newSet;
+        });
+      };
+      img.src = src;
+    };
+
+    // Preload previous image
+    if (hasPrev) {
+      const prevPhoto = photos[currentIndex - 1];
+      if (prevPhoto && !preloadedImages.has(prevPhoto.path)) {
+        preloadImage(prevPhoto.path);
+      }
+    }
+
+    // Preload next image
+    if (hasNext) {
+      const nextPhoto = photos[currentIndex + 1];
+      if (nextPhoto && !preloadedImages.has(nextPhoto.path)) {
+        preloadImage(nextPhoto.path);
+      }
+    }
+  }, [photo.id, currentIndex, hasPrev, hasNext, photos, preloadedImages]);
 
   return (
     <div style={{ 
@@ -37,9 +69,6 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
         justifyContent: 'space-between',
         alignItems: 'center'
       }}>
-        <h2 style={{ margin: '0', fontSize: '18px', fontWeight: '500' }}>
-          {photo.name}
-        </h2>
         <div style={{ display: 'flex', gap: '10px' }}>
           <button 
             onClick={() => onNavigate('prev')}
@@ -110,8 +139,8 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
             src={photo.path}
             alt={photo.name}
             style={{
-              maxWidth: '100%',
-              maxHeight: '100%',
+              maxWidth: '400px',
+              maxHeight: '300px',
               width: 'auto',
               height: 'auto',
               objectFit: 'contain',
@@ -136,20 +165,6 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div style={{ 
-        padding: '15px 20px',
-        background: '#222222',
-        borderTop: '1px solid #444444',
-        textAlign: 'center'
-      }}>
-        <p style={{ margin: '0 0 5px 0', fontSize: '14px', color: '#cccccc' }}>
-          {photo.name}
-        </p>
-        <p style={{ margin: '0', fontSize: '12px', color: '#999999' }}>
-          Photo {currentIndex + 1} of {photos.length} in collection
-        </p>
-      </div>
     </div>
   );
 };

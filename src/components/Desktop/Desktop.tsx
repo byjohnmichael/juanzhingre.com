@@ -8,6 +8,8 @@ import CollectionViewer from '../Window/CollectionViewer';
 import FullImageViewer from '../Window/FullImageViewer';
 import FolderContent from '../Window/FolderContent';
 import DemosPlayer from '../Window/DemosPlayer';
+import CreditsWindow from '../Window/CreditsWindow';
+import AppointmentMaker from '../Window/AppointmentMaker';
 import { Icon as IconType, Window as WindowType, DesktopState } from '../../types/desktop';
 import { photoData } from '../../data/photos';
 
@@ -120,7 +122,28 @@ const StartMenu = styled.div<{ isOpen: boolean }>`
   border-left: 2px solid #ffffff;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
   z-index: 1001;
-  display: ${props => props.isOpen ? 'block' : 'none'};
+  display: ${props => props.isOpen ? 'flex' : 'none'};
+  visibility: ${props => props.isOpen ? 'visible' : 'hidden'};
+`;
+
+const StartMenuSidebar = styled.div`
+  width: 40px;
+  background: #000080;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+`;
+
+const StartMenuContent = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 const StartMenuItem = styled.div`
@@ -128,11 +151,20 @@ const StartMenuItem = styled.div`
   cursor: pointer;
   font-size: 12px;
   color: #000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   
   &:hover {
     background: #000080;
     color: white;
   }
+`;
+
+const MenuItemIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 `;
 
 const Clock = styled.div`
@@ -185,7 +217,7 @@ const Desktop: React.FC = () => {
           id: 'music',
           name: 'music',
           type: 'folder',
-          position: { x: 50, y: 150 },
+          position: { x: 30, y: 100 },
           icon: '/icons/music.png',
           color: '#007AFF'
         },
@@ -193,7 +225,7 @@ const Desktop: React.FC = () => {
           id: 'the-archive',
           name: 'ishv4ra',
           type: 'folder',
-          position: { x: 50, y: 280 },
+          position: { x: 30, y: 200 },
           icon: '/icons/ishv4ra.png',
           color: '#8B4513'
         },
@@ -201,7 +233,7 @@ const Desktop: React.FC = () => {
           id: 'demos',
           name: 'demos',
           type: 'folder',
-          position: { x: 50, y: 540 },
+          position: { x: 30, y: 300 },
           icon: '/icons/demos.png',
           color: '#9C27B0'
         },
@@ -209,7 +241,7 @@ const Desktop: React.FC = () => {
           id: 'sculpter',
           name: 'playday cuts',
           type: 'folder',
-          position: { x: 50, y: 670 },
+          position: { x: 30, y: 400 },
           icon: '/icons/playdaycuts.png',
           color: '#FF6B6B'
         }
@@ -244,7 +276,7 @@ const Desktop: React.FC = () => {
     if (firstPhoto) {
       const newWindow: WindowType = {
         id: `photo-${firstPhoto.id}`,
-        title: `${firstPhoto.name} - Full View`,
+        title: `${firstPhoto.name}`,
         type: 'app',
         position: { x: 200, y: 200 },
         size: { width: 900, height: 700 },
@@ -270,7 +302,7 @@ const Desktop: React.FC = () => {
   const handleOpenPhoto = useCallback((photo: any) => {
     const newWindow: WindowType = {
       id: `photo-${photo.id}`,
-      title: `${photo.name} - Full View`,
+      title: `${photo.name}`,
       type: 'app',
       position: { x: 200, y: 200 },
       size: { width: 900, height: 700 },
@@ -283,6 +315,27 @@ const Desktop: React.FC = () => {
         onClose={() => handleWindowClose(`photo-${photo.id}`)}
         onNavigate={(direction) => handlePhotoNavigate(photo, direction)}
       />
+    };
+    
+    setDesktopState(prev => ({
+      ...prev,
+      windows: [...prev.windows, newWindow],
+      activeWindowId: newWindow.id
+    }));
+  }, []);
+
+  const handleOpenCredits = useCallback(() => {
+    const newWindow: WindowType = {
+      id: 'credits-window',
+      title: 'Origins',
+      type: 'app',
+      position: { x: 300, y: 200 },
+      size: { width: 400, height: 300 },
+      isMinimized: false,
+      isMaximized: false,
+      isOpen: true,
+      zIndex: Date.now(),
+      content: <CreditsWindow onClose={() => handleWindowClose('credits-window')} />
     };
     
     setDesktopState(prev => ({
@@ -310,10 +363,11 @@ const Desktop: React.FC = () => {
         if (w.id === `photo-${currentPhoto.id}`) {
           return {
             ...w,
-            title: `${newPhoto.name} - Full View`,
+            id: `photo-${newPhoto.id}`, // Update the window ID to match the new photo
+            title: `${newPhoto.name}`,
             content: <FullImageViewer 
               photo={newPhoto} 
-              onClose={() => handleWindowClose(w.id)}
+              onClose={() => handleWindowClose(`photo-${newPhoto.id}`)}
               onNavigate={(dir) => handlePhotoNavigate(newPhoto, dir)}
             />
           };
@@ -382,7 +436,7 @@ const Desktop: React.FC = () => {
       // Open photo gallery for the Archive icon
       const newWindow: WindowType = {
         id: `window-${icon.id}`,
-        title: 'Photo Gallery',
+        title: 'ishv4ra',
         type: 'app',
         position: { x: 100, y: 100 },
         size: { width: 1000, height: 700 },
@@ -411,6 +465,26 @@ const Desktop: React.FC = () => {
         isOpen: true,
         zIndex: Date.now(),
         content: <DemosPlayer />
+      };
+      
+      setDesktopState(prev => ({
+        ...prev,
+        windows: [...prev.windows, newWindow],
+        activeWindowId: newWindow.id
+      }));
+    } else if (icon.id === 'sculpter') {
+      // Open appointment maker for playday cuts
+      const newWindow: WindowType = {
+        id: `window-${icon.id}`,
+        title: icon.name,
+        type: 'app',
+        position: { x: 200, y: 150 },
+        size: { width: 500, height: 600 },
+        isMinimized: false,
+        isMaximized: false,
+        isOpen: true,
+        zIndex: Date.now(),
+        content: <AppointmentMaker onClose={() => handleWindowClose(`window-${icon.id}`)} />
       };
       
       setDesktopState(prev => ({
@@ -515,7 +589,13 @@ const Desktop: React.FC = () => {
     }));
   }, []);
 
-  const handleDesktopClick = useCallback(() => {
+  const handleDesktopClick = useCallback((e: React.MouseEvent) => {
+    // Don't close menu if clicking on start button or start menu
+    if (e.target instanceof HTMLElement) {
+      if (e.target.closest('[data-start-button]') || e.target.closest('[data-start-menu]')) {
+        return;
+      }
+    }
     setIsStartMenuOpen(false);
   }, []);
 
@@ -542,7 +622,8 @@ const Desktop: React.FC = () => {
 
   return (
     <DesktopContainer onClick={handleDesktopClick}>
-      <BackgroundOverlay />
+      <>
+        <BackgroundOverlay />
       
       {/* Desktop Icons */}
       {desktopState.icons.map(icon => (
@@ -582,7 +663,13 @@ const Desktop: React.FC = () => {
 
       {/* Taskbar */}
       <Taskbar>
-        <StartButton onClick={() => setIsStartMenuOpen(!isStartMenuOpen)}>
+        <StartButton 
+          data-start-button
+          onClick={() => {
+            console.log('Start button clicked, current state:', isStartMenuOpen);
+            setIsStartMenuOpen(!isStartMenuOpen);
+          }}
+        >
           <img 
             src="/icons/startmenu.png" 
             alt="Start" 
@@ -652,17 +739,48 @@ const Desktop: React.FC = () => {
       </Taskbar>
 
       {/* Start Menu */}
-      <StartMenu isOpen={isStartMenuOpen}>
-        <StartMenuItem onClick={() => setIsStartMenuOpen(false)}>
-          Shut Down
-        </StartMenuItem>
-        <StartMenuItem onClick={() => setIsStartMenuOpen(false)}>
-          Restart
-        </StartMenuItem>
-        <StartMenuItem onClick={() => setIsStartMenuOpen(false)}>
-          Log Off
-        </StartMenuItem>
+      {console.log('Rendering StartMenu with isOpen:', isStartMenuOpen)}
+      <StartMenu isOpen={isStartMenuOpen} data-start-menu>
+        <StartMenuSidebar>
+          start menu
+        </StartMenuSidebar>
+        <StartMenuContent>
+          <StartMenuItem 
+            onClick={() => {
+              window.open('https://www.instagram.com/juan.zhingre/', '_blank');
+              setIsStartMenuOpen(false);
+            }}
+          >
+            <MenuItemIcon src="/icons/instagram.png" alt="Instagram" />
+            juan.zhingre
+          </StartMenuItem>
+          <StartMenuItem 
+            onClick={() => {
+              window.open('https://www.instagram.com/ishv4ra/', '_blank');
+              setIsStartMenuOpen(false);
+            }}
+          >
+            <MenuItemIcon src="/icons/instagram.png" alt="Instagram" />
+            ishv4ra
+          </StartMenuItem>
+          <div style={{ height: '1px', background: '#808080', margin: '2px 0' }}></div>
+          <StartMenuItem onClick={() => {
+            handleOpenCredits();
+            setIsStartMenuOpen(false);
+          }}>
+            Origins
+          </StartMenuItem>
+          <div style={{ height: '1px', background: '#808080', margin: '2px 0' }}></div>
+          <StartMenuItem onClick={() => {
+            setIsStartMenuOpen(false);
+            window.close();
+          }}>
+            <MenuItemIcon src="/icons/startmenu.png" alt="Shutdown" />
+            Shut Down...
+          </StartMenuItem>
+        </StartMenuContent>
       </StartMenu>
+      </>
     </DesktopContainer>
   );
 };

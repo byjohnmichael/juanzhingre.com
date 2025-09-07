@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.7.0",
     "@testing-library/react": "^16.3.0",
@@ -14,10 +15,12 @@
     "@types/styled-components": "^5.1.34",
     "98.css": "^0.1.21",
     "framer-motion": "^12.23.12",
+    "nodemailer": "^7.0.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-scripts": "5.0.1",
     "styled-components": "^6.1.19",
+    "twilio": "^5.9.0",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -44,5 +47,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/nodemailer": "^7.0.1"
   }
 }

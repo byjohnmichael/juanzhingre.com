@@ -157,17 +157,6 @@ const Window: React.FC<WindowProps> = ({
           <div className="title-bar-text">{window.title}</div>
           <div className="title-bar-controls">
             <button 
-              aria-label="Minimize"
-              onClick={() => onMinimize(window.id)}
-              title="Minimize"
-            />
-            <button 
-              aria-label={window.isMaximized ? "Restore" : "Maximize"}
-              onClick={() => onMaximize(window.id)}
-              title={window.isMaximized ? "Restore" : "Maximize"}
-              className={window.isMaximized ? "restore" : "maximize"}
-            />
-            <button 
               aria-label="Close"
               onClick={() => onClose(window.id)}
               title="Close"

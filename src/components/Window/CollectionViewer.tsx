@@ -96,7 +96,7 @@ const CollectionViewer: React.FC<CollectionViewerProps> = ({ collection, onOpenP
             >
               <div style={{
                 width: '100%',
-                height: '120px',
+                height: '60px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -107,11 +107,9 @@ const CollectionViewer: React.FC<CollectionViewerProps> = ({ collection, onOpenP
                   src={photo.path}
                   alt={photo.name}
                   style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    width: 'auto',
-                    height: 'auto',
-                    objectFit: 'contain'
+                    width: '50px',
+                    height: '50px',
+                    objectFit: 'cover'
                   }}
                   onError={(e) => {
                     // Fallback for failed images
@@ -164,8 +162,8 @@ const CollectionViewer: React.FC<CollectionViewerProps> = ({ collection, onOpenP
               }}
             >
               <div style={{
-                width: '60px',
-                height: '60px',
+                width: '40px',
+                height: '40px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -177,11 +175,9 @@ const CollectionViewer: React.FC<CollectionViewerProps> = ({ collection, onOpenP
                   src={photo.path}
                   alt={photo.name}
                   style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    width: 'auto',
-                    height: 'auto',
-                    objectFit: 'contain'
+                    width: '35px',
+                    height: '35px',
+                    objectFit: 'cover'
                   }}
                   onError={(e) => {
                     // Fallback for failed images

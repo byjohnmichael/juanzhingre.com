@@ -4,7 +4,9 @@ import styled from 'styled-components';
 const MusicContainer = styled.div`
   display: flex;
   height: 100%;
-  background: white;
+  max-width: 600px;
+  margin: 0 auto;
+  background:rgb(184, 184, 184);
   border: 2px solid black;
   font-family: 'Courier New', monospace;
 `;
@@ -107,8 +109,8 @@ const MusicInterface: React.FC = () => {
           <img src="/icons/profile.jpg" alt="Profile" />
         </ProfileCircle>
         <ProfileText>
-          Hey this is my music<br />
-          Hope you enjoy :)
+          hey this is my music<br />
+          hope you enjoy :)
         </ProfileText>
       </LeftSection>
       
