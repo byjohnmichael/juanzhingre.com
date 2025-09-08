@@ -51,149 +51,149 @@ const WindowContainer = styled.div<{
 `;
 
 const Window: React.FC<WindowProps> = ({ 
-  window, 
-  onClose, 
-  onMinimize, 
-  onMaximize, 
-  onMove, 
-  onResize, 
-  onFocus,
-  children 
+    window, 
+    onClose, 
+    onMinimize, 
+    onMaximize, 
+    onMove, 
+    onResize, 
+    onFocus,
+    children 
 }) => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
-  
-  const windowRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef(false);
-  const isResizingRef = useRef(false);
-  const dragOffsetRef = useRef({ x: 0, y: 0 });
-  const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
-
-  // Optimized mouse move handler using refs to avoid re-creation
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (isDraggingRef.current) {
-      const newX = e.clientX - dragOffsetRef.current.x;
-      const newY = e.clientY - dragOffsetRef.current.y;
-      
-      // Use requestAnimationFrame for smooth updates
-      requestAnimationFrame(() => {
-        onMove(window.id, newX, newY);
-      });
-    }
+    const [isDragging, setIsDragging] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
+    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+    const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
     
-    if (isResizingRef.current) {
-      const newWidth = Math.max(300, resizeStartRef.current.width + (e.clientX - resizeStartRef.current.x));
-      const newHeight = Math.max(200, resizeStartRef.current.height + (e.clientY - resizeStartRef.current.y));
-      
-      requestAnimationFrame(() => {
-        onResize(window.id, newWidth, newHeight);
-      });
-    }
-  }, [window.id, onMove, onResize]);
+    const windowRef = useRef<HTMLDivElement>(null);
+    const isDraggingRef = useRef(false);
+    const isResizingRef = useRef(false);
+    const dragOffsetRef = useRef({ x: 0, y: 0 });
+    const resizeStartRef = useRef({ x: 0, y: 0, width: 0, height: 0 });
 
-  // Optimized mouse up handler
-  const handleMouseUp = useCallback(() => {
-    isDraggingRef.current = false;
-    isResizingRef.current = false;
-    setIsDragging(false);
-    setIsResizing(false);
-  }, []);
-
-  // Set up event listeners only when needed
-  useEffect(() => {
-    if (isDragging || isResizing) {
-      document.addEventListener('mousemove', handleMouseMove, { passive: true });
-      document.addEventListener('mouseup', handleMouseUp, { passive: true });
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    onFocus(window.id);
-    
-    if (e.target === windowRef.current?.querySelector('[data-title-bar]')) {
-      const rect = windowRef.current.getBoundingClientRect();
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      
-      dragOffsetRef.current = { x: offsetX, y: offsetY };
-      setDragOffset({ x: offsetX, y: offsetY });
-      isDraggingRef.current = true;
-      setIsDragging(true);
-    }
-  }, [onFocus, window.id]);
-
-  const handleResizeStart = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    resizeStartRef.current = {
-      x: e.clientX,
-      y: e.clientY,
-      width: window.size.width,
-      height: window.size.height
-    };
-    setResizeStart({
-      x: e.clientX,
-      y: e.clientY,
-      width: window.size.width,
-      height: window.size.height
-    });
-    isResizingRef.current = true;
-    setIsResizing(true);
-  }, [window.size.width, window.size.height]);
-
-  return (
-    <WindowContainer
-      ref={windowRef}
-      isMinimized={window.isMinimized}
-      isMaximized={window.isMaximized}
-      zIndex={window.zIndex}
-      x={window.position.x}
-      y={window.position.y}
-      width={window.size.width}
-      height={window.size.height}
-      onMouseDown={handleMouseDown}
-      className={isDragging ? 'dragging' : ''}
-    >
-      <div className="window">
-        <div className="title-bar" data-title-bar>
-          <div className="title-bar-text">{window.title}</div>
-          <div className="title-bar-controls">
-            <button 
-              aria-label="Close"
-              onClick={() => onClose(window.id)}
-              title="Close"
-              className="close"
-            />
-          </div>
-        </div>
+    // Optimized mouse move handler using refs to avoid re-creation
+    const handleMouseMove = useCallback((e: MouseEvent) => {
+        if (isDraggingRef.current) {
+            const newX = e.clientX - dragOffsetRef.current.x;
+            const newY = e.clientY - dragOffsetRef.current.y;
+            
+            // Use requestAnimationFrame for smooth updates
+            requestAnimationFrame(() => {
+                onMove(window.id, newX, newY);
+            });
+        }
         
-        <div className="window-body">
-          {children}
-        </div>
-      </div>
-      
-      {!window.isMaximized && (
-        <div
-          style={{
-            position: 'absolute',
-            right: 0,
-            bottom: 0,
-            width: '20px',
-            height: '20px',
-            cursor: 'nw-resize',
-            background: 'transparent'
-          }}
-          onMouseDown={handleResizeStart}
-        />
-      )}
-    </WindowContainer>
-  );
+        if (isResizingRef.current) {
+            const newWidth = Math.max(300, resizeStartRef.current.width + (e.clientX - resizeStartRef.current.x));
+            const newHeight = Math.max(200, resizeStartRef.current.height + (e.clientY - resizeStartRef.current.y));
+            
+            requestAnimationFrame(() => {
+                onResize(window.id, newWidth, newHeight);
+            });
+        }
+    }, [window.id, onMove, onResize]);
+
+    // Optimized mouse up handler
+    const handleMouseUp = useCallback(() => {
+        isDraggingRef.current = false;
+        isResizingRef.current = false;
+        setIsDragging(false);
+        setIsResizing(false);
+    }, []);
+
+    // Set up event listeners only when needed
+    useEffect(() => {
+        if (isDragging || isResizing) {
+            document.addEventListener('mousemove', handleMouseMove, { passive: true });
+            document.addEventListener('mouseup', handleMouseUp, { passive: true });
+            
+            return () => {
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            };
+        }
+    }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
+
+    const handleMouseDown = useCallback((e: React.MouseEvent) => {
+        onFocus(window.id);
+        
+        if (e.target === windowRef.current?.querySelector('[data-title-bar]')) {
+            const rect = windowRef.current.getBoundingClientRect();
+            const offsetX = e.clientX - rect.left;
+            const offsetY = e.clientY - rect.top;
+            
+            dragOffsetRef.current = { x: offsetX, y: offsetY };
+            setDragOffset({ x: offsetX, y: offsetY });
+            isDraggingRef.current = true;
+            setIsDragging(true);
+        }
+    }, [onFocus, window.id]);
+
+    const handleResizeStart = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+        resizeStartRef.current = {
+            x: e.clientX,
+            y: e.clientY,
+            width: window.size.width,
+            height: window.size.height
+        };
+        setResizeStart({
+            x: e.clientX,
+            y: e.clientY,
+            width: window.size.width,
+            height: window.size.height
+        });
+        isResizingRef.current = true;
+        setIsResizing(true);
+    }, [window.size.width, window.size.height]);
+
+    return (
+        <WindowContainer
+            ref={windowRef}
+            isMinimized={window.isMinimized}
+            isMaximized={window.isMaximized}
+            zIndex={window.zIndex}
+            x={window.position.x}
+            y={window.position.y}
+            width={window.size.width}
+            height={window.size.height}
+            onMouseDown={handleMouseDown}
+            className={isDragging ? 'dragging' : ''}
+        >
+            <div className="window">
+                <div className="title-bar" data-title-bar>
+                    <div className="title-bar-text">{window.title}</div>
+                    <div className="title-bar-controls">
+                        <button 
+                            aria-label="Close"
+                            onClick={() => onClose(window.id)}
+                            title="Close"
+                            className="close"
+                        />
+                    </div>
+                </div>
+                
+                <div className="window-body">
+                    {children}
+                </div>
+            </div>
+            
+            {!window.isMaximized && (
+                <div
+                    style={{
+                        position: 'absolute',
+                        right: 0,
+                        bottom: 0,
+                        width: '20px',
+                        height: '20px',
+                        cursor: 'nw-resize',
+                        background: 'transparent'
+                    }}
+                    onMouseDown={handleResizeStart}
+                />
+            )}
+        </WindowContainer>
+    );
 };
 
 export default Window;
