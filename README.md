@@ -1,4 +1,4 @@
-# juanzhingre
+# juanzhingre.com
 
 Portfolio website for Juan Zhingre
 
