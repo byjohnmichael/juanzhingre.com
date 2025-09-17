@@ -18,7 +18,7 @@
     {
       "source": "/api/(send-sms|appointment-confirmation|business-notification)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://juanzhingre.com,http://localhost:2509" },
+        { "key": "Access-Control-Allow-Origin", "value": "https://juanzhingre.com,https://www.juanzhingre.com,http://localhost:2509" },
         { "key": "Access-Control-Allow-Methods", "value": "POST,OPTIONS" },
         { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization" }
       ]
