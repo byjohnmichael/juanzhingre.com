@@ -162,6 +162,18 @@
     opacity: 0.6;
 }
 
+.dayButton.disabled, .timeButton.disabled {
+    background: #f0f0f0;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.dayButton.disabled:hover, .timeButton.disabled:hover {
+    background: #f0f0f0;
+    color: #999;
+}
+
 @media (max-width: 768px) {
     .dayButton, .timeButton {
         font-size: 16px;
@@ -299,38 +311,41 @@
     background: #45a049;
 }
 
-/* SMS Toggle Styles */
-.smsToggleContainer {
+
+/* Week Navigation Styles */
+.weekNavigation {
+    display: flex;
+    gap: 8px;
     margin-top: 15px;
-    padding: 10px;
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 4px;
+    justify-content: center;
 }
 
-.smsToggleLabel {
+.navButton {
+    padding: 6px 12px;
+    background: #ffffff;
+    border: 2px solid #808080;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s;
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    margin: 0;
+    justify-content: center;
 }
 
-.smsToggle {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
+.navButton:hover:not(:disabled) {
+    background: #f0f0f0;
 }
 
-.smsToggle:disabled {
+.navButton:disabled {
+    background: #f0f0f0;
+    color: #999;
     cursor: not-allowed;
     opacity: 0.6;
-}
-
-.smsToggleText {
-    user-select: none;
-    color: #495057;
 }
 
 @media (max-width: 768px) {
@@ -341,6 +356,12 @@
     
     .smsToggleLabel {
         font-size: 16px;
+    }
+    
+    .navButton {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
     }
 }
 

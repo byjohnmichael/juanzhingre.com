@@ -407,11 +407,11 @@ const Desktop: React.FC = () => {
                 timeZone: 'America/Denver',
                 hour: '2-digit',
                 minute: '2-digit',
-                hour12: false
+                hour12: true
             });
             
             const mountainTime = formatter.format(now);
-            setCurrentTime(`${mountainTime} MST`);
+            setCurrentTime(mountainTime);
         };
 
         updateTime(); // Update immediately

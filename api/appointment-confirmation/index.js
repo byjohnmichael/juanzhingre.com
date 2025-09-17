@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-// Helper function to format phone number
+// HELPER function to format phone number
 function formatPhoneNumber(phone) {
     let cleaned = phone.replace(/[^\d+]/g, '');
     
@@ -19,7 +19,7 @@ function formatPhoneNumber(phone) {
     return cleaned.startsWith('+') ? cleaned : `+${cleaned}`;
 }
 
-// Helper function to send SMS via Textbelt
+// HELPER function to send SMS via Textbelt
 async function sendSMS(phone, message) {
     try {
         const response = await axios.post('https://textbelt.com/text', {
@@ -46,10 +46,10 @@ async function sendSMS(phone, message) {
     }
 }
 
-// Main handler
+// MAIN handler
 module.exports = async (req, res) => {
     // Set CORS headers
-    const allowedOrigins = process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',') : ['*'];
+    const allowedOrigins = ['https://juanzhingre.com', 'https://www.juanzhingre.com', 'http://localhost:2509'];
     const origin = req.headers.origin;
     const corsOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
     
@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
             ? `House Call (+$5) - ${address || 'Address provided'}`
             : 'At Location';
             
-        const message = `Hi ${name}! Your appointment is confirmed:\n\n` +
+        const message = `Hey ${name}! Your appointment is confirmed:\n\n` +
                        `📅 ${day} at ${time}\n` +
                        `✂️ ${cut}\n` +
                        `📍 ${locationText}\n\n` +

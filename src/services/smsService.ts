@@ -1,3 +1,5 @@
+import { emailService } from './emailService';
+
 interface SMSConfig {
     apiKey: string;
     baseUrl: string;
@@ -11,29 +13,57 @@ interface AppointmentDetails {
     time: string;
     location: string;
     address?: string;
+    confirmationCode?: string;
 }
 
 interface SMSResponse {
     success: boolean;
     textId?: string;
     error?: string;
+    emailFallbackUsed?: boolean;
 }
 
 class SMSService {
     private config: SMSConfig;
+    private clientEmail: string;
 
     constructor() {
+        // Auto-detect environment and use appropriate URL
+        const isDevelopment = process.env.NODE_ENV === 'development';
+        const baseUrl = isDevelopment 
+            ? 'http://localhost:2599'
+            : 'https://www.juanzhingre.com';
+            
         this.config = {
             apiKey: process.env.REACT_APP_TEXTBELT_API_KEY || 'textbelt', // Fallback to free tier
-            baseUrl: process.env.REACT_APP_SMS_SERVER_URL || 'https://juanzhingre.com'
+            baseUrl: baseUrl
         };
+        
+        this.clientEmail = 'johnmburnside21@gmail.com';
+    }
+
+    /**
+     * Generate a 4-character confirmation code
+     */
+    private generateConfirmationCode(): string {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < 4; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
     }
 
     /**
      * Send SMS notification for appointment booking
      */
-    async sendAppointmentConfirmation(appointment: AppointmentDetails): Promise<SMSResponse> {
-        return this.sendAppointmentSMS(appointment, 'confirmation');
+    async sendAppointmentConfirmation(appointment: AppointmentDetails): Promise<SMSResponse & { confirmationCode?: string }> {
+        // Generate confirmation code
+        const confirmationCode = this.generateConfirmationCode();
+        const appointmentWithCode = { ...appointment, confirmationCode };
+        
+        const result = await this.sendAppointmentSMS(appointmentWithCode, 'confirmation');
+        return { ...result, confirmationCode };
     }
 
     /**
@@ -51,7 +81,7 @@ class SMSService {
     }
 
     /**
-     * Send appointment SMS via backend API
+     * Send appointment SMS via backend API with email fallback
      */
     private async sendAppointmentSMS(appointment: AppointmentDetails, type: 'confirmation' | 'business'): Promise<SMSResponse> {
         try {
@@ -73,21 +103,61 @@ class SMSService {
             console.log('SMS Debug - Response status:', response.status);
             console.log('SMS Debug - Response ok:', response.ok);
 
+            if (!response.ok) {
+                throw new Error(`API request failed with status: ${response.status}`);
+            }
+
             const data = await response.json();
             console.log('SMS Debug - Response data:', data);
+            
+            // If SMS failed, try email fallback
+            if (!data.success) {
+                console.log('SMS failed, attempting email fallback...');
+                await this.handleEmailFallback(appointment, data.error || 'SMS sending failed', type);
+                return {
+                    ...data,
+                    emailFallbackUsed: true
+                };
+            }
             
             return data;
         } catch (error) {
             console.error('SMS Service Error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+            
+            // API is down or failed, try email fallback
+            console.log('API failed, attempting email fallback...');
+            await this.handleEmailFallback(appointment, errorMessage, type);
+            
             return {
                 success: false,
-                error: error instanceof Error ? error.message : 'Unknown error occurred'
+                error: errorMessage,
+                emailFallbackUsed: true
             };
         }
     }
 
     /**
-     * Core SMS sending method (for general SMS)
+     * Handle email fallback when SMS fails
+     */
+    private async handleEmailFallback(appointment: AppointmentDetails, error: string, type: 'confirmation' | 'business'): Promise<void> {
+        try {
+            if (type === 'confirmation') {
+                // For customer confirmations, send failure notification
+                await emailService.sendSMSFailureNotification(appointment, error);
+            } else {
+                // For business notifications, send failure notification
+                await emailService.sendSMSFailureNotification(appointment, error);
+            }
+            console.log('Email fallback notification sent successfully');
+        } catch (emailError) {
+            console.error('Email fallback also failed:', emailError);
+            // At this point, we've tried both SMS and email - user should be notified
+        }
+    }
+
+    /**
+     * Core SMS sending method (for general SMS) with email fallback
      */
     private async sendSMS(phone: string, message: string): Promise<SMSResponse> {
         try {
@@ -108,16 +178,63 @@ class SMSService {
             console.log('SMS Debug - Response status:', response.status);
             console.log('SMS Debug - Response ok:', response.ok);
 
+            if (!response.ok) {
+                throw new Error(`API request failed with status: ${response.status}`);
+            }
+
             const data = await response.json();
             console.log('SMS Debug - Response data:', data);
+            
+            // If SMS failed, try email fallback
+            if (!data.success) {
+                console.log('SMS failed, attempting email fallback...');
+                await this.handleGeneralEmailFallback(phone, message, data.error || 'SMS sending failed');
+                return {
+                    ...data,
+                    emailFallbackUsed: true
+                };
+            }
             
             return data;
         } catch (error) {
             console.error('SMS Service Error:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+            
+            // API is down or failed, try email fallback
+            console.log('API failed, attempting email fallback...');
+            await this.handleGeneralEmailFallback(phone, message, errorMessage);
+            
             return {
                 success: false,
-                error: error instanceof Error ? error.message : 'Unknown error occurred'
+                error: errorMessage,
+                emailFallbackUsed: true
             };
+        }
+    }
+
+    /**
+     * Handle email fallback for general SMS
+     */
+    private async handleGeneralEmailFallback(phone: string, message: string, error: string): Promise<void> {
+        try {
+            const subject = '📱 SMS Failed - Manual Follow-up Required';
+            const emailMessage = `
+SMS sending failed for the following message:
+
+Phone: ${phone}
+Message: ${message}
+
+Error: ${error}
+
+Please contact the recipient directly.
+
+Timestamp: ${new Date().toISOString()}
+            `.trim();
+
+            await emailService.sendGeneralNotification(this.clientEmail, subject, emailMessage);
+            console.log('General email fallback notification sent successfully');
+        } catch (emailError) {
+            console.error('General email fallback also failed:', emailError);
         }
     }
 
@@ -159,6 +276,7 @@ class SMSService {
                `📅 ${appointment.day} at ${appointment.time}\n` +
                `✂️ ${appointment.cut}\n` +
                `📍 ${locationText}\n\n` +
+               `Confirmation Code: ${appointment.confirmationCode}\n\n` +
                `I'll reach out soon to confirm details. Thanks for booking!`;
     }
 

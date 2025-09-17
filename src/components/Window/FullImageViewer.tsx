@@ -114,6 +114,4 @@ const FullImageViewer: React.FC<FullImageViewerProps> = ({ photo, onClose, onNav
             </div>
         </div>
     );
-};
-
-export default FullImageViewer;
+}; export default FullImageViewer;

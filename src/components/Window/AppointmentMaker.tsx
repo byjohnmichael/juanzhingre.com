@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
 import smsService from '../../services/smsService';
+import edgeConfigService from '../../services/edgeConfigService';
+import ConfirmationCode from './ConfirmationCode';
 import './AppointmentMaker.css';
 
 interface AppointmentMakerProps {
@@ -26,8 +28,108 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [smsEnabled, setSmsEnabled] = useState(true);
     const [businessPhone] = useState(process.env.BUSINESS_PHONE || '');
+    const [weekOffset, setWeekOffset] = useState(0); // 0 = current week, 1 = next week, etc.
+    const [showConfirmation, setShowConfirmation] = useState(false);
+    const [confirmationData, setConfirmationData] = useState<any>(null);
+    const [bookedSlots, setBookedSlots] = useState<Set<string>>(new Set());
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    
+    // Get current date and time
+    const now = new Date();
+    const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTime = currentHour * 60 + currentMinute; // Convert to minutes for easier comparison
+    
+    // Calculate dates for the current week offset
+    const getWeekDates = () => {
+        const startOfWeek = new Date(now);
+        const dayOfWeek = currentDay === 0 ? 6 : currentDay - 1; // Convert Sunday=0 to Monday=0
+        startOfWeek.setDate(now.getDate() - dayOfWeek + (weekOffset * 7));
+        
+        const weekDates = [];
+        for (let i = 0; i < 6; i++) { // Monday to Saturday
+            const date = new Date(startOfWeek);
+            date.setDate(startOfWeek.getDate() + i);
+            weekDates.push(date);
+        }
+        return weekDates;
+    };
+    
+    const weekDates = getWeekDates();
+    
+    // Format date for display (M/D format)
+    const formatDate = (date: Date) => {
+        return `${date.getMonth() + 1}/${date.getDate()}`;
+    };
+
+    // Load appointment availability
+    const loadAppointmentAvailability = async () => {
+        try {
+            const startDate = weekDates[0].toISOString().split('T')[0];
+            const endDate = weekDates[5].toISOString().split('T')[0];
+            
+            const result = await edgeConfigService.getAppointmentAvailability(startDate, endDate);
+            if (result.success && result.slots) {
+                const bookedSet = new Set();
+                result.slots.forEach(slot => {
+                    if (slot.status === 'confirmed' || slot.status === 'pending') {
+                        bookedSet.add(`${slot.date}-${slot.time}`);
+                    }
+                });
+                setBookedSlots(bookedSet);
+            }
+        } catch (error) {
+            console.error('Failed to load appointment availability:', error);
+        }
+    };
+
+    // Load availability when week changes
+    React.useEffect(() => {
+        loadAppointmentAvailability();
+    }, [weekOffset]);
+    
+    // Check if a day is in the past
+    const isDayInPast = (dayIndex: number) => {
+        if (weekOffset > 0) return false; // Future weeks are never in the past
+        const dayDate = weekDates[dayIndex];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return dayDate < today;
+    };
+    
+    // Check if a time slot is in the past
+    const isTimeInPast = (dayIndex: number, time: string) => {
+        if (weekOffset > 0) return false; // Future weeks are never in the past
+        if (isDayInPast(dayIndex)) return true; // Past days are always in the past
+        
+        const dayDate = weekDates[dayIndex];
+        const isToday = dayDate.toDateString() === now.toDateString();
+        if (!isToday) return false;
+        
+        // Parse time (e.g., "4:00PM" -> 16:00)
+        const timeMatch = time.match(/(\d+):(\d+)(AM|PM)/i);
+        if (!timeMatch) return false;
+        
+        let hour = parseInt(timeMatch[1]);
+        const minute = parseInt(timeMatch[2]);
+        const ampm = timeMatch[3].toUpperCase();
+        
+        if (ampm === 'PM' && hour !== 12) hour += 12;
+        if (ampm === 'AM' && hour === 12) hour = 0;
+        
+        const slotTime = hour * 60 + minute;
+        return slotTime <= currentTime;
+    };
+
+    // Check if a time slot is booked
+    const isTimeBooked = (dayIndex: number, time: string) => {
+        const dayDate = weekDates[dayIndex];
+        const dateString = dayDate.toISOString().split('T')[0];
+        const slotKey = `${dateString}-${time}`;
+        return bookedSlots.has(slotKey);
+    };
     
     const getTimeSlots = (day: string) => {
         if (day === 'Saturday') {
@@ -57,11 +159,17 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
             setIsSubmitting(true);
             
             try {
+                // Get the actual date for the selected day
+                const selectedDayIndex = days.indexOf(selectedDay);
+                const selectedDate = weekDates[selectedDayIndex];
+                const formattedDate = formatDate(selectedDate);
+                
                 const appointmentDetails = {
                     name: name,
                     phone: phone,
                     cut: 'Volume 1 Cut',
                     day: selectedDay,
+                    date: formattedDate,
                     time: selectedTime,
                     location: isHouseCall ? `House Call (+$5) - ${address}` : 'At Location',
                     address: isHouseCall ? address : undefined
@@ -90,7 +198,23 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
                     try {
                         // Send confirmation SMS to customer
                         const customerSmsResult = await smsService.sendAppointmentConfirmation(appointmentDetails);
-                        if (!customerSmsResult.success) {
+                        if (customerSmsResult.success && customerSmsResult.confirmationCode) {
+                            // Store confirmation data in Edge Config
+                            const confirmationData = {
+                                confirmationCode: customerSmsResult.confirmationCode,
+                                appointmentDetails: appointmentDetails,
+                                status: 'pending',
+                                createdAt: new Date().toISOString(),
+                                expiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString() // 5 minutes
+                            };
+
+                            await edgeConfigService.storeConfirmation(confirmationData);
+                            
+                            // Show confirmation code window
+                            setConfirmationData(confirmationData);
+                            setShowConfirmation(true);
+                            return; // Don't show success message yet
+                        } else {
                             console.warn('Customer SMS failed:', customerSmsResult.error);
                         }
 
@@ -128,6 +252,36 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
         }
     };
 
+    const handleConfirmationSuccess = (code: string) => {
+        setShowConfirmation(false);
+        alert(`Appointment confirmed!\n\nConfirmation Code: ${code}\n\nCut: Volume 1 Cut ($20)\nDay: ${selectedDay}\nTime: ${selectedTime}\nLocation: ${isHouseCall ? `House Call (+$5) - ${address}` : 'At Location'}\n\nI'll reach out to you soon!`);
+        
+        // Reset form
+        setCutSelected(false);
+        setSelectedDay('');
+        setSelectedTime('');
+        setIsHouseCall(false);
+        setName('');
+        setPhone('');
+        setAddress('');
+    };
+
+    const handleConfirmationClose = () => {
+        setShowConfirmation(false);
+        setConfirmationData(null);
+    };
+
+    // Show confirmation window if needed
+    if (showConfirmation && confirmationData) {
+        return (
+            <ConfirmationCode
+                onClose={handleConfirmationClose}
+                onConfirm={handleConfirmationSuccess}
+                appointmentDetails={confirmationData}
+            />
+        );
+    }
+
     return (
         <div className="container">
             <h1 className="title">
@@ -155,31 +309,67 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
                         <label className="label">availability:</label>
                         <div className="availabilityContainer">
                             <div className="daysColumn">
-                                {days.map(day => (
+                                {days.map((day, index) => {
+                                    const isPast = isDayInPast(index);
+                                    return (
+                                        <button
+                                            key={day}
+                                            className={`dayButton ${selectedDay === day ? 'selected' : ''} ${isPast ? 'disabled' : ''}`}
+                                            onClick={() => {
+                                                if (!isPast) {
+                                                    setSelectedDay(day);
+                                                    setSelectedTime(''); // Reset time when day changes
+                                                }
+                                            }}
+                                            disabled={isSubmitting || isPast}
+                                        >
+                                            {day} {formatDate(weekDates[index])}
+                                        </button>
+                                    );
+                                })}
+                                
+                                {/* Navigation buttons */}
+                                <div className="weekNavigation">
                                     <button
-                                        key={day}
-                                        className={`dayButton ${selectedDay === day ? 'selected' : ''}`}
-                                        onClick={() => {
-                                            setSelectedDay(day);
-                                            setSelectedTime(''); // Reset time when day changes
-                                        }}
-                                        disabled={isSubmitting}
+                                        className="navButton"
+                                        onClick={() => setWeekOffset(weekOffset - 1)}
+                                        disabled={weekOffset === 0 || isSubmitting}
+                                        title="Previous Week"
                                     >
-                                        {day}
+                                        ←
                                     </button>
-                                ))}
+                                    <button
+                                        className="navButton"
+                                        onClick={() => setWeekOffset(weekOffset + 1)}
+                                        disabled={isSubmitting}
+                                        title="Next Week"
+                                    >
+                                        →
+                                    </button>
+                                </div>
                             </div>
                             <div className="timesColumn">
-                                {selectedDay && getTimeSlots(selectedDay).map(time => (
-                                    <button
-                                        key={time}
-                                        className={`timeButton ${selectedTime === time ? 'selected' : ''}`}
-                                        onClick={() => setSelectedTime(time)}
-                                        disabled={isSubmitting}
-                                    >
-                                        {time}
-                                    </button>
-                                ))}
+                                {selectedDay && getTimeSlots(selectedDay).map(time => {
+                                    const selectedDayIndex = days.indexOf(selectedDay);
+                                    const isPast = isTimeInPast(selectedDayIndex, time);
+                                    const isBooked = isTimeBooked(selectedDayIndex, time);
+                                    const isDisabled = isPast || isBooked;
+                                    return (
+                                        <button
+                                            key={time}
+                                            className={`timeButton ${selectedTime === time ? 'selected' : ''} ${isDisabled ? 'disabled' : ''}`}
+                                            onClick={() => {
+                                                if (!isDisabled) {
+                                                    setSelectedTime(time);
+                                                }
+                                            }}
+                                            disabled={isSubmitting || isDisabled}
+                                            title={isBooked ? 'This time slot is already booked' : ''}
+                                        >
+                                            {time}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -249,22 +439,6 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
                                     />
                                 </div>
                             )}
-                        </div>
-                        
-                        {/* SMS Notification Toggle */}
-                        <div className="smsToggleContainer">
-                            <label className="smsToggleLabel">
-                                <input
-                                    type="checkbox"
-                                    checked={smsEnabled}
-                                    onChange={(e) => setSmsEnabled(e.target.checked)}
-                                    disabled={isSubmitting}
-                                    className="smsToggle"
-                                />
-                                <span className="smsToggleText">
-                                    📱 Send SMS confirmation (recommended)
-                                </span>
-                            </label>
                         </div>
                     </div>
                 )}

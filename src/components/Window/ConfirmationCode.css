@@ -1,0 +1,192 @@
+.confirmation-container {
+    height: 100%;
+    padding: 20px;
+    background: #c0c0c0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.confirmation-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 20px 0;
+    color: #000;
+    text-align: center;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .confirmation-title {
+        font-size: 20px;
+    }
+}
+
+.confirmation-info {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.confirmation-info p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.appointment-summary {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.appointment-summary h3 {
+    margin: 0 0 10px 0;
+    color: #000;
+    font-size: 16px;
+}
+
+.appointment-summary p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.code-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.code-label {
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 16px;
+    color: #000;
+}
+
+.code-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #808080;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    background: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    box-sizing: border-box;
+}
+
+.code-input:focus {
+    outline: none;
+    border: 2px solid #4CAF50;
+}
+
+.code-input.error {
+    border: 2px solid #dc3545;
+}
+
+.code-input:disabled {
+    background: #f0f0f0;
+    color: #999;
+}
+
+.error-text {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.timer-container {
+    margin-bottom: 20px;
+}
+
+.timer {
+    font-size: 14px;
+    color: #666;
+    text-align: center;
+    margin: 0;
+}
+
+.timer.expired {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 400px;
+    justify-content: center;
+}
+
+.cancel-button, .confirm-button {
+    padding: 12px 24px;
+    border: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    border-left: 2px solid #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    align-self: center;
+    box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.3);
+    min-height: auto;
+    min-width: auto;
+    flex: 1;
+}
+
+.cancel-button {
+    background: #f8f9fa;
+    color: #6c757d;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background: #e9ecef;
+}
+
+.confirm-button {
+    background: #4CAF50;
+    color: white;
+}
+
+.confirm-button:hover:not(:disabled) {
+    background: #45a049;
+}
+
+.confirm-button:disabled,
+.confirm-button.disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .confirmation-container {
+        padding: 15px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .cancel-button, .confirm-button {
+        padding: 16px 32px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+}
