@@ -1,117 +1,11 @@
 import React, { useState, useRef } from 'react';
-import styled from 'styled-components';
-
-const PlayerContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: white;
-  border: 2px solid black;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-`;
-
-const TableContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  border-bottom: 1px solid #ccc;
-`;
-
-const Table = styled.table`
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-`;
-
-const TableHeader = styled.thead`
-  background-color: #f0f0f0;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-`;
-
-const HeaderRow = styled.tr`
-  border-bottom: 1px solid #ccc;
-`;
-
-const HeaderCell = styled.th<{ sortable?: boolean }>`
-  padding: 8px 12px;
-  text-align: left;
-  font-weight: bold;
-  color: #333;
-  border-right: 1px solid #ccc;
-  cursor: ${props => props.sortable ? 'pointer' : 'default'};
-  user-select: none;
-  
-  &:hover {
-    background-color: ${props => props.sortable ? '#e0e0e0' : 'transparent'};
-  }
-  
-  &:last-child {
-    border-right: none;
-  }
-`;
-
-const SortIcon = styled.span`
-  margin-left: 4px;
-  font-size: 10px;
-`;
-
-const TableBody = styled.tbody``;
-
-const TableRow = styled.tr<{ isPlaying: boolean }>`
-  background-color: ${props => props.isPlaying ? '#e3f2fd' : 'white'};
-  border-bottom: 1px solid #eee;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: ${props => props.isPlaying ? '#e3f2fd' : '#f8f8f8'};
-  }
-`;
-
-const TableCell = styled.td`
-  padding: 6px 12px;
-  border-right: 1px solid #eee;
-  vertical-align: middle;
-  
-  &:last-child {
-    border-right: none;
-  }
-`;
-
-
-const PlayButton = styled.button<{ isPlaying: boolean }>`
-  background: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 0;
-  cursor: pointer;
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
-  color: ${props => props.isPlaying ? '#1976d2' : '#666'};
-  margin-right: 8px;
-  box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  
-  &:hover {
-    background: #e0e0e0;
-    color: #1976d2;
-  }
-  
-  &:active {
-    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
-  }
-`;
-
-
+import './DemoPlayer.css';
 
 interface DemoFile {
-  name: string;
-  filename: string;
-  duration: string;
-  size: string;
+    name: string;
+    filename: string;
+    duration: string;
+    size: string;
 }
 
 const DemoPlayer: React.FC = () => {
@@ -123,13 +17,13 @@ const DemoPlayer: React.FC = () => {
     const audioRef = useRef<HTMLAudioElement>(null);
 
     const demos: DemoFile[] = [
-        { name: "You are driving me insane", filename: "You_are_driving_me_insane.m4a", duration: "3:45", size: "1.8MB" },
-        { name: "Sunburnt shrederino", filename: "Sunburnt_shrederino.m4a", duration: "2:30", size: "1.2MB" },
-        { name: "Song idea", filename: "Song_idea.m4a", duration: "2:15", size: "1.2MB" },
-        { name: "Girl you lol fine bridge", filename: "Girl_you_lol_fine_bridge.m4a", duration: "1:20", size: "459KB" },
-        { name: "Hideaway updated demo", filename: "Hideaway_updated_demo.m4a", duration: "2:45", size: "1.0MB" },
-        { name: "Hmmm (demo)", filename: "Hmmm_(demo).m4a", duration: "1:50", size: "636KB" },
-        { name: "Ya seeeeee (demo)", filename: "Ya_seeeeee(demo).m4a", duration: "2:55", size: "1.1MB" }
+        { name: "You are driving me insane", filename: "you-are-driving-me-insane.m4a", duration: "3:45", size: "1.8MB" },
+        { name: "Girl you lol fine bridge", filename: "girl-you-lol-fine-bridge.m4a", duration: "1:20", size: "459KB" },
+        { name: "Hideaway updated demo", filename: "hideaway-updated-demo.m4a", duration: "2:45", size: "1.0MB" },
+        { name: "Sunburnt shrederino", filename: "sunburnt-shrederino.m4a", duration: "2:30", size: "1.2MB" },
+        { name: "Ya seeeeee (demo)", filename: "ya-seeeeee(demo).m4a", duration: "2:55", size: "1.1MB" },
+        { name: "Hmmm (demo)", filename: "hmmm(demo).m4a", duration: "1:50", size: "636KB" },
+        { name: "Song idea", filename: "song-idea.m4a", duration: "2:15", size: "1.2MB" }
     ];
 
     const sortedDemos = [...demos].sort((a, b) => {
@@ -169,64 +63,64 @@ const DemoPlayer: React.FC = () => {
     };
 
     return (
-        <PlayerContainer>
-            <TableContainer>
-                <Table>
-                    <TableHeader>
-                        <HeaderRow>
-                            <HeaderCell 
-                                sortable 
+        <div className="playerContainer">
+            <div className="tableContainer">
+                <table className="table">
+                    <thead className="tableHeader">
+                        <tr className="headerRow">
+                            <th 
+                                className={`headerCell sortable`}
                                 onClick={() => handleSort('name')}
                                 style={{ width: '50%' }}
                             >
                                 Song Name
                                 {sortBy === 'name' && (
-                                    <SortIcon>{sortOrder === 'asc' ? '▲' : '▼'}</SortIcon>
+                                    <span className="sortIcon">{sortOrder === 'asc' ? '▲' : '▼'}</span>
                                 )}
-                            </HeaderCell>
-                            <HeaderCell 
-                                sortable 
+                            </th>
+                            <th 
+                                className={`headerCell sortable`}
                                 onClick={() => handleSort('duration')}
                                 style={{ width: '15%' }}
                             >
                                 Time
                                 {sortBy === 'duration' && (
-                                    <SortIcon>{sortOrder === 'asc' ? '▲' : '▼'}</SortIcon>
+                                    <span className="sortIcon">{sortOrder === 'asc' ? '▲' : '▼'}</span>
                                 )}
-                            </HeaderCell>
-                            <HeaderCell style={{ width: '20%' }}>Artist</HeaderCell>
-                            <HeaderCell style={{ width: '15%' }}>Album</HeaderCell>
-                        </HeaderRow>
-                    </TableHeader>
-                    <TableBody>
+                            </th>
+                            <th className="headerCell" style={{ width: '20%' }}>Artist</th>
+                            <th className="headerCell" style={{ width: '15%' }}>Album</th>
+                        </tr>
+                    </thead>
+                    <tbody className="tableBody">
                         {sortedDemos.map((demo) => (
-                            <TableRow 
+                            <tr 
                                 key={demo.filename}
-                                isPlaying={currentTrack === demo.filename}
+                                className={`tableRow ${currentTrack === demo.filename ? 'playing' : ''}`}
                                 onClick={() => handlePlayTrack(demo.filename)}
                             >
-                                <TableCell>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <PlayButton 
-                                            isPlaying={currentTrack === demo.filename && isPlaying}
+                                <td className="tableCell">
+                                    <div className="playButtonContainer">
+                                        <button 
+                                            className={`playButton ${currentTrack === demo.filename && isPlaying ? 'playing' : ''}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handlePlayTrack(demo.filename);
                                             }}
                                         >
                                             {currentTrack === demo.filename && isPlaying ? '⏸' : '▶'}
-                                        </PlayButton>
+                                        </button>
                                         {demo.name}
                                     </div>
-                                </TableCell>
-                                <TableCell>{demo.duration}</TableCell>
-                                <TableCell>Juan Zhingre</TableCell>
-                                <TableCell>demos</TableCell>
-                            </TableRow>
+                                </td>
+                                <td className="tableCell">{demo.duration}</td>
+                                <td className="tableCell">Juan Zhingre</td>
+                                <td className="tableCell">demos</td>
+                            </tr>
                         ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    </tbody>
+                </table>
+            </div>
             
             <audio
                 ref={audioRef}
@@ -234,6 +128,8 @@ const DemoPlayer: React.FC = () => {
                     setIsPlaying(false);
                 }}
             />
-        </PlayerContainer>
+        </div>
     );
-}; export default DemoPlayer;
+};
+
+export default DemoPlayer;

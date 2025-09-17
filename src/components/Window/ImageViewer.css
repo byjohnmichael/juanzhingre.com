@@ -1,0 +1,161 @@
+.container {
+    height: 100%;
+    padding: 20px;
+    background: #c0c0c0;
+    overflow: auto;
+}
+
+.header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #808080;
+}
+
+.title {
+    margin: 0 0 10px 0;
+    color: #222222;
+    font-size: 20px;
+}
+
+.headerInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.photoCount {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.viewModeButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.viewModeButton {
+    padding: 4px 8px;
+    background: #c0c0c0;
+    border: 1px solid #808080;
+    border-top: 1px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.viewModeButton.default {
+    background: #000080;
+    color: white;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+}
+
+.gridItem {
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #ffffff;
+    border: 2px solid #808080;
+    box-shadow: inset -1px -1px #ffffff, inset 1px 1px #808080;
+    transition: all 0.1s ease;
+}
+
+.gridItem:hover {
+    transform: scale(1.02);
+    box-shadow: inset -2px -2px #ffffff, inset 2px 2px #808080;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #c0c0c0;
+    background: #f8f8f8;
+}
+
+.imagePreview img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.imageError {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-size: 12px;
+}
+
+.imageLabel {
+    padding: 8px;
+    font-size: 11px;
+    color: #222222;
+    background: #ffffff;
+    text-align: center;
+    font-weight: 500;
+    word-break: break-word;
+}
+
+.listContainer {
+    padding: 10px 0;
+}
+
+.listItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 8px;
+    background: #ffffff;
+    border: 1px solid #808080;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: inset -1px -1px #ffffff, inset 1px 1px #808080;
+    transition: all 0.1s ease;
+}
+
+.listItem:hover {
+    background: #f0f0f0;
+}
+
+.listImagePreview {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    border: 1px solid #c0c0c0;
+    background: #f8f8f8;
+}
+
+.listImagePreview img {
+    width: 35px;
+    height: 35px;
+    object-fit: cover;
+}
+
+.listImageError {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #999;
+    font-size: 12px;
+}
+
+.listImageLabel {
+    font-size: 14px;
+    color: #222222;
+    font-weight: 500;
+}

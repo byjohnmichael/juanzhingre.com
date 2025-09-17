@@ -1,0 +1,76 @@
+.musicContainer {
+    display: flex;
+    height: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgb(184, 184, 184);
+    border: 2px solid black;
+    font-family: 'Courier New', monospace;
+}
+
+.leftSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.profileCircle {
+    width: 120px;
+    height: 120px;
+    border: 2px solid black;
+    border-radius: 50%;
+    margin-bottom: 30px;
+    background: white;
+    overflow: hidden;
+}
+
+.profileCircle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.profileText {
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.4;
+    color: black;
+}
+
+.rightSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px;
+    justify-content: center;
+}
+
+.serviceList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.serviceItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+    padding: 8px 0;
+    transition: background-color 0.2s ease;
+}
+
+.serviceItem:hover {
+    background-color: #f0f0f0;
+}
+
+.serviceIcon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}

@@ -1,67 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
-
-const GameContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  height: 100%;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-`;
-
-const GameTitle = styled.h2`
-  margin: 0 0 20px 0;
-  font-size: 24px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-`;
-
-const GameCanvas = styled.div`
-  width: 300px;
-  height: 200px;
-  border: 3px solid white;
-  border-radius: 10px;
-  background: #000;
-  position: relative;
-  overflow: hidden;
-  margin-bottom: 20px;
-`;
-
-const Player = styled.div<{ x: number; y: number }>`
-  width: 20px;
-  height: 20px;
-  background: #00ff00;
-  border-radius: 50%;
-  position: absolute;
-  left: ${props => props.x}px;
-  top: ${props => props.y}px;
-  transition: all 0.1s ease;
-  box-shadow: 0 0 10px #00ff00;
-`;
-
-const Target = styled.div<{ x: number; y: number }>`
-  width: 15px;
-  height: 15px;
-  background: #ff0000;
-  border-radius: 50%;
-  position: absolute;
-  left: ${props => props.x}px;
-  top: ${props => props.y}px;
-  box-shadow: 0 0 10px #ff0000;
-`;
-
-const Score = styled.div`
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
-
-const Instructions = styled.div`
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.8;
-`;
+import './SimpleGame.css';
 
 const SimpleGame: React.FC = () => {
     const [playerPos, setPlayerPos] = useState({ x: 150, y: 100 });
@@ -135,33 +73,36 @@ const SimpleGame: React.FC = () => {
     };
 
     return (
-        <GameContainer>
-            <GameTitle>Icon Collector</GameTitle>
-            <Score>Score: {score}</Score>
-            <GameCanvas>
-                <Player x={playerPos.x} y={playerPos.y} />
-                <Target x={targetPos.x} y={targetPos.y} />
-            </GameCanvas>
-            <Instructions>
+        <div className="gameContainer">
+            <h2 className="gameTitle">Icon Collector</h2>
+            <div className="score">Score: {score}</div>
+            <div className="gameCanvas">
+                <div 
+                    className="player"
+                    style={{
+                        left: playerPos.x,
+                        top: playerPos.y
+                    }}
+                />
+                <div 
+                    className="target"
+                    style={{
+                        left: targetPos.x,
+                        top: targetPos.y
+                    }}
+                />
+            </div>
+            <div className="instructions">
                 Use WASD or Arrow Keys to move the green circle<br />
                 Collect the red targets to score points!
-            </Instructions>
+            </div>
             <button 
                 onClick={resetGame}
-                style={{
-                    marginTop: '20px',
-                    padding: '10px 20px',
-                    fontSize: '16px',
-                    backgroundColor: '#4CAF50',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                }}
+                className="resetButton"
             >
                 Reset Game
             </button>
-        </GameContainer>
+        </div>
     );
 };
 

@@ -1,0 +1,36 @@
+.container {
+    height: 100%;
+    padding: 20px;
+    background: #c0c0c0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: underline;
+    margin: 0 0 30px 0;
+    color: #000;
+    text-align: center;
+}
+
+.content {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #000;
+    text-align: center;
+}
+
+.creditSection {
+    margin-bottom: 15px;
+}
+
+.link {
+    text-decoration: underline;
+    color: #000;
+    text-decoration-color: #000;
+}

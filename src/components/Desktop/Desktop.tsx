@@ -2,256 +2,14 @@ import { Icon as IconType, Window as WindowType, DesktopState } from '../../type
 import React, { useState, useCallback, useEffect } from 'react';
 import AppointmentMaker from '../Window/AppointmentMaker';
 import FullImageViewer from '../Window/FullImageViewer';
+import PhotoGallery from '../Window/PhotoGallery';
 import MusicWindow from '../Window/MusicWindow';
 import CreditsWindow from '../Window/Origins';
-import PhotoGallery from '../Window/PhotoGallery';
 import DemoPlayer from '../Window/DemoPlayer';
 import { photoData } from '../../data/photos';
-import styled from 'styled-components';
 import Window from '../Window/Window';
 import Icon from '../Icon/Icon';
-
-const DesktopContainer = styled.div`
-    width: 100vw;
-    height: 100vh;
-    background-image: url('/background.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    position: relative;
-    overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-    @media (max-width: 768px) {
-        overflow-x: hidden;
-        overflow-y: auto;
-    }
-`;
-
-const Taskbar = styled.div`
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background: linear-gradient(to bottom, #c0c0c0 0%, #a0a0a0 100%);
-    border-top: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    display: flex;
-    align-items: center;
-    padding: 0 4px;
-    z-index: 1000;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
-
-    @media (max-width: 768px) {
-        height: 50px;
-        padding: 0 8px;
-    }
-`;
-
-const StartButton = styled.button`
-    width: 80px;
-    height: 32px;
-    background: linear-gradient(to bottom, #c0c0c0 0%, #a0a0a0 100%);
-    border: 2px solid #ffffff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    border-left: 2px solid #ffffff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 8px;
-    margin-right: 8px;
-    box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.3);
-
-    @media (max-width: 768px) {
-        width: 90px;
-        height: 40px;
-        padding: 0 12px;
-        margin-right: 12px;
-        font-size: 14px;
-    }
-  
-    &:active {
-        background: linear-gradient(to bottom, #a0a0a0 0%, #c0c0c0 100%);
-        border: 2px solid #808080;
-        border-right: 2px solid #ffffff;
-        border-bottom: 2px solid #ffffff;
-        border-left: 2px solid #808080;
-        box-shadow: inset 1px 1px 0px rgba(0, 0, 0, 0.3);
-    }
-`;
-
-const TaskbarItems = styled.div`
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex: 1;
-
-    @media (max-width: 768px) {
-        gap: 8px;
-        overflow-x: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-
-        &::-webkit-scrollbar {
-            display: none;
-        }
-    }
-`;
-
-const TaskbarItem = styled.div<{ isActive: boolean }>`
-    height: 28px;
-    min-width: 140px;
-
-    background: ${props => props.isActive 
-        ? 'linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%)' 
-        : 'linear-gradient(to bottom, #e0e0e0 0%, #c0c0c0 100%)'
-    };
-    border: 2px solid #ffffff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    border-left: 2px solid #ffffff;
-    display: flex;
-    align-items: center;
-    padding: 0 8px;
-    cursor: pointer;
-    font-size: 11px;
-    color: #000;
-
-    box-shadow: ${props => props.isActive 
-        ? 'inset 1px 1px 0px rgba(0, 0, 0, 0.1)' 
-        : 'inset 1px 1px 0px rgba(255, 255, 255, 0.3)'
-    };
-
-    @media (max-width: 768px) {
-        height: 40px;
-        min-width: 120px;
-        padding: 0 12px;
-        font-size: 12px;
-        flex-shrink: 0;
-    }
-
-    &:hover {
-        background: linear-gradient(to bottom, #f0f0f0 0%, #d0d0d0 100%);
-    }
-`;
-
-const TaskbarIcon = styled.img`
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
-    image-rendering: pixelated;
-`;
-
-const StartMenu = styled.div<{ isOpen: boolean }>`
-    position: fixed;
-    bottom: 40px;
-    left: 4px;
-    width: 200px;
-    background: #c0c0c0;
-    border: 2px solid #ffffff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    border-left: 2px solid #ffffff;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
-    z-index: 1001;
-    display: ${props => props.isOpen ? 'flex' : 'none'};
-    visibility: ${props => props.isOpen ? 'visible' : 'hidden'};
-`;
-
-const StartMenuSidebar = styled.div`
-    width: 40px;
-    background: #000080;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    letter-spacing: 1px;
-`;
-
-const StartMenuContent = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-`;
-
-const StartMenuItem = styled.div`
-    padding: 8px 16px;
-    cursor: pointer;
-    font-size: 12px;
-    color: #000;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-
-    &:hover {
-        background: #000080;
-        color: white;
-    }
-`;
-
-const MenuItemIcon = styled.img`
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-`;
-
-const Clock = styled.div`
-    height: 28px;
-    min-width: 80px;
-    background: linear-gradient(to bottom, #e0e0e0 0%, #c0c0c0 100%);
-    border: 2px solid #ffffff;
-    border-right: 2px solid #808080;
-    border-bottom: 2px solid #808080;
-    border-left: 2px solid #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: #000;
-    font-weight: bold;
-    box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.3);
-    margin-left: auto;
-`;
-
-const BackgroundOverlay = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.2);
-    pointer-events: none;
-`;
-
-const DesktopTitle = styled.div`
-    position: absolute;
-    top: 50px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 48px;
-    font-weight: bold;
-    color: white;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
-    z-index: 1;
-    pointer-events: none;
-
-    @media (max-width: 768px) {
-        font-size: 32px;
-        top: 20px;
-        padding: 0 20px;
-        text-align: center;
-        word-wrap: break-word;
-    }
-`;
+import './Desktop.css';
 
 const Desktop: React.FC = () => {
     const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
@@ -543,7 +301,7 @@ const Desktop: React.FC = () => {
                 title: icon.name,
                 type: 'app',
                 position: isMobile ? { x: 10, y: 10 } : { x: 200, y: 150 },
-                size: isMobile ? { width: window.innerWidth - 20, height: window.innerHeight - 100 } : { width: 500, height: 600 },
+                size: isMobile ? { width: window.innerWidth - 20, height: window.innerHeight - 100 } : { width: 500, height: 750 },
                 isMinimized: false,
                 isMaximized: false,
                 isOpen: true,
@@ -576,7 +334,7 @@ const Desktop: React.FC = () => {
                 activeWindowId: newWindow.id
             }));
         }
-    }, [desktopState.windows]);
+    }, [desktopState.windows, handleOpenCollection]);
 
     const handleWindowClose = useCallback((windowId: string) => {
         setDesktopState(prev => ({
@@ -663,9 +421,9 @@ const Desktop: React.FC = () => {
     }, []);
 
     return (
-        <DesktopContainer onClick={handleDesktopClick}>
+        <div className="desktopContainer" onClick={handleDesktopClick}>
             <>
-                <BackgroundOverlay/>
+                <div className="backgroundOverlay"/>
 
                 {/* Desktop Icons */}
                 {desktopState.icons.map(icon => (
@@ -704,8 +462,9 @@ const Desktop: React.FC = () => {
                 ))}
 
                 {/* Taskbar */}
-                <Taskbar>
-                    <StartButton 
+                <div className="taskbar">
+                    <button 
+                        className="startButton"
                         data-start-button
                         onClick={() => {
                             console.log('Start button clicked, current state:', isStartMenuOpen);
@@ -715,23 +474,14 @@ const Desktop: React.FC = () => {
                         <img 
                             src="/icons/startmenu.png" 
                             alt="Start" 
-                            style={{ 
-                                width: '16px', 
-                                height: '16px',
-                                imageRendering: 'pixelated'
-                            }} 
+                            className="startButtonIcon"
                         />
-                        <span style={{ 
-                            color: 'white', 
-                            fontWeight: 'bold', 
-                            fontSize: '12px',
-                            textShadow: '1px 1px 1px rgba(0, 0, 0, 0.5)'
-                        }}>
+                        <span className="startButtonText">
                             Start
                         </span>
-                    </StartButton>
+                    </button>
 
-                    <TaskbarItems>
+                    <div className="taskbarItems">
                         {desktopState.windows
                             .filter(window => !window.isMinimized)
                             .map(window => {
@@ -748,9 +498,9 @@ const Desktop: React.FC = () => {
                                 }
                                 
                                 return (
-                                    <TaskbarItem
+                                    <div
                                         key={window.id}
-                                        isActive={desktopState.activeWindowId === window.id}
+                                        className={`taskbarItem ${desktopState.activeWindowId === window.id ? 'active' : ''}`}
                                         onClick={() => {
                                             setDesktopState(prev => ({
                                                 ...prev,
@@ -768,61 +518,65 @@ const Desktop: React.FC = () => {
                                             }));
                                         }}
                                     >
-                                        {iconSrc && <TaskbarIcon src={iconSrc} alt="" />}
+                                        {iconSrc && <img src={iconSrc} alt="" className="taskbarIcon" />}
                                         {window.title}
-                                    </TaskbarItem>
+                                    </div>
                                 );
                             })}
-                    </TaskbarItems>
+                    </div>
 
-                    <Clock>
+                    <div className="clock">
                         {currentTime}
-                    </Clock>
-                </Taskbar>
+                    </div>
+                </div>
 
                 {/* Start Menu */}
                 {console.log('Rendering StartMenu with isOpen:', isStartMenuOpen)}
-                <StartMenu isOpen={isStartMenuOpen} data-start-menu>
-                    <StartMenuSidebar>
+                <div className={`startMenu ${!isStartMenuOpen ? 'hidden' : ''}`} data-start-menu>
+                    <div className="startMenuSidebar">
                         start menu
-                    </StartMenuSidebar>
-                    <StartMenuContent>
-                        <StartMenuItem 
+                    </div>
+                    <div className="startMenuContent">
+                        <div 
+                            className="startMenuItem"
                             onClick={() => {
                                 window.open('https://www.instagram.com/juan.zhingre/', '_blank');
                                 setIsStartMenuOpen(false);
                             }}
                         >
-                            <MenuItemIcon src="/social-icons/instagram.png" alt="Instagram" />
+                            <img src="/social-icons/instagram.png" alt="Instagram" className="menuItemIcon" />
                             juan.zhingre
-                        </StartMenuItem>
-                        <StartMenuItem 
+                        </div>
+                        <div 
+                            className="startMenuItem"
                             onClick={() => {
                                 window.open('https://www.instagram.com/ishv4ra/', '_blank');
                                 setIsStartMenuOpen(false);
                             }}
                         >
-                            <MenuItemIcon src="/social-icons/instagram.png" alt="Instagram" />
+                            <img src="/social-icons/instagram.png" alt="Instagram" className="menuItemIcon" />
                             ishv4ra
-                        </StartMenuItem>
-                        <div style={{ height: '1px', background: '#808080', margin: '2px 0' }}></div>
-                        <StartMenuItem onClick={() => {
+                        </div>
+                        <div className="divider"></div>
+                        <div className="startMenuItem" onClick={() => {
                             handleOpenCredits();
                             setIsStartMenuOpen(false);
                         }}>
                             Origins
-                        </StartMenuItem>
-                        <div style={{ height: '1px', background: '#808080', margin: '2px 0' }}></div>
-                        <StartMenuItem onClick={() => {
+                        </div>
+                        <div className="divider"></div>
+                        <div className="startMenuItem" onClick={() => {
                             setIsStartMenuOpen(false);
                             window.close();
                         }}>
-                            <MenuItemIcon src="/icons/startmenu.png" alt="Shutdown" />
+                            <img src="/icons/startmenu.png" alt="Shutdown" className="menuItemIcon" />
                             Shut Down...
-                        </StartMenuItem>
-                    </StartMenuContent>
-                </StartMenu>
+                        </div>
+                    </div>
+                </div>
             </>
-        </DesktopContainer>
+        </div>
     );
-}; export default Desktop;
+};
+
+export default Desktop;

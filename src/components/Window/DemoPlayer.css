@@ -1,0 +1,124 @@
+.playerContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background: white;
+    border: 2px solid black;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.tableContainer {
+    flex: 1;
+    overflow-y: auto;
+    border-bottom: 1px solid #ccc;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+
+.tableHeader {
+    background-color: #f0f0f0;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.headerRow {
+    border-bottom: 1px solid #ccc;
+}
+
+.headerCell {
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+    border-right: 1px solid #ccc;
+    user-select: none;
+}
+
+.headerCell.sortable {
+    cursor: pointer;
+}
+
+.headerCell.sortable:hover {
+    background-color: #e0e0e0;
+}
+
+.headerCell:last-child {
+    border-right: none;
+}
+
+.sortIcon {
+    margin-left: 4px;
+    font-size: 10px;
+}
+
+.tableBody {
+    /* Empty for now */
+}
+
+.tableRow {
+    background-color: white;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.tableRow.playing {
+    background-color: #e3f2fd;
+}
+
+.tableRow:hover {
+    background-color: #f8f8f8;
+}
+
+.tableRow.playing:hover {
+    background-color: #e3f2fd;
+}
+
+.tableCell {
+    padding: 6px 12px;
+    border-right: 1px solid #eee;
+    vertical-align: middle;
+}
+
+.tableCell:last-child {
+    border-right: none;
+}
+
+.playButton {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 0;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    color: #666;
+    margin-right: 8px;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.playButton.playing {
+    color: #1976d2;
+}
+
+.playButton:hover {
+    background: #e0e0e0;
+    color: #1976d2;
+}
+
+.playButton:active {
+    box-shadow: inset 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.playButtonContainer {
+    display: flex;
+    align-items: center;
+}

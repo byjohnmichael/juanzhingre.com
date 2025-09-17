@@ -1,0 +1,108 @@
+.iconContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: grab;
+    user-select: none;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: absolute;
+    will-change: transform;
+    transform: scale(1);
+    backface-visibility: hidden;
+}
+
+.iconContainer.dragging {
+    cursor: grabbing;
+    transition: none;
+    will-change: left, top;
+    transform: translateZ(0);
+    background-color: rgba(255, 255, 255, 0.15);
+    transform: scale(1.1) translateZ(0);
+    z-index: 9999;
+}
+
+@media (max-width: 768px) {
+    .iconContainer {
+        padding: 8px;
+        min-height: 80px;
+        min-width: 80px;
+        touch-action: none;
+        flex-shrink: 0;
+    }
+}
+
+.iconContainer:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
+}
+
+.iconContainer.dragging:hover {
+    transform: scale(1.1) translateZ(0);
+}
+
+.iconContainer.selected:not(.dragging) {
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.iconCircle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    box-shadow: none;
+    font-size: 0;
+    color: white;
+    font-weight: bold;
+    overflow: hidden;
+}
+
+.iconCircle.image {
+    border-radius: 0;
+}
+
+.iconCircle:not(.image) {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-size: 32px;
+}
+
+@media (max-width: 768px) {
+    .iconCircle {
+        width: 72px;
+        height: 72px;
+    }
+    
+    .iconCircle:not(.image) {
+        font-size: 36px;
+    }
+}
+
+.iconLabel {
+    color: white;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    max-width: 80px;
+    word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+    .iconLabel {
+        font-size: 14px;
+        max-width: 100px;
+        line-height: 1.2;
+    }
+}
+
+.iconImage {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}

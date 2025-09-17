@@ -1,54 +1,17 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import styled from 'styled-components';
 import { Window as WindowType } from '../../types/desktop';
+import './Window.css';
 
 interface WindowProps {
-  window: WindowType;
-  onClose: (id: string) => void;
-  onMinimize: (id: string) => void;
-  onMaximize: (id: string) => void;
-  onMove: (id: string, x: number, y: number) => void;
-  onResize: (id: string, width: number, height: number) => void;
-  onFocus: (id: string) => void;
-  children?: React.ReactNode;
+    window: WindowType;
+    onClose: (id: string) => void;
+    onMinimize: (id: string) => void;
+    onMaximize: (id: string) => void;
+    onMove: (id: string, x: number, y: number) => void;
+    onResize: (id: string, width: number, height: number) => void;
+    onFocus: (id: string) => void;
+    children?: React.ReactNode;
 }
-
-const WindowContainer = styled.div<{ 
-  isMinimized: boolean; 
-  isMaximized: boolean;
-  zIndex: number;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}>`
-  position: absolute;
-  left: ${props => props.isMinimized ? -1000 : props.x}px;
-  top: ${props => props.isMinimized ? -1000 : props.y}px;
-  width: ${props => props.isMaximized ? '100vw' : props.width}px;
-  height: ${props => props.isMaximized ? '100vh' : props.height}px;
-  z-index: ${props => props.zIndex};
-  transition: ${props => props.isMinimized ? 'none' : 'all 0.2s ease'};
-  
-  /* Performance optimizations for smooth dragging */
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  
-  /* Smooth dragging when not transitioning */
-  &.dragging {
-    transition: none;
-    will-change: left, top;
-  }
-  
-  @media (max-width: 768px) {
-    /* On mobile, ensure windows don't go off screen */
-    left: ${props => props.isMinimized ? -1000 : Math.max(0, Math.min(props.x, window.innerWidth - props.width))}px !important;
-    top: ${props => props.isMinimized ? -1000 : Math.max(0, Math.min(props.y, window.innerHeight - props.height - 50))}px !important;
-    width: ${props => props.isMaximized ? '100vw' : Math.min(props.width, window.innerWidth - 20)}px;
-    height: ${props => props.isMaximized ? 'calc(100vh - 50px)' : Math.min(props.height, window.innerHeight - 100)}px;
-  }
-`;
 
 const Window: React.FC<WindowProps> = ({ 
     window, 
@@ -62,8 +25,6 @@ const Window: React.FC<WindowProps> = ({
 }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isResizing, setIsResizing] = useState(false);
-    const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-    const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
     
     const windowRef = useRef<HTMLDivElement>(null);
     const isDraggingRef = useRef(false);
@@ -117,13 +78,14 @@ const Window: React.FC<WindowProps> = ({
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
         onFocus(window.id);
         
-        if (e.target === windowRef.current?.querySelector('[data-title-bar]')) {
+        // Check if clicking on title bar or any element within it
+        const titleBar = windowRef.current?.querySelector('[data-title-bar]');
+        if (titleBar && windowRef.current && (e.target === titleBar || titleBar.contains(e.target as Node))) {
             const rect = windowRef.current.getBoundingClientRect();
             const offsetX = e.clientX - rect.left;
             const offsetY = e.clientY - rect.top;
             
             dragOffsetRef.current = { x: offsetX, y: offsetY };
-            setDragOffset({ x: offsetX, y: offsetY });
             isDraggingRef.current = true;
             setIsDragging(true);
         }
@@ -137,62 +99,53 @@ const Window: React.FC<WindowProps> = ({
             width: window.size.width,
             height: window.size.height
         };
-        setResizeStart({
-            x: e.clientX,
-            y: e.clientY,
-            width: window.size.width,
-            height: window.size.height
-        });
         isResizingRef.current = true;
         setIsResizing(true);
     }, [window.size.width, window.size.height]);
 
     return (
-        <WindowContainer
+        <div
             ref={windowRef}
-            isMinimized={window.isMinimized}
-            isMaximized={window.isMaximized}
-            zIndex={window.zIndex}
-            x={window.position.x}
-            y={window.position.y}
-            width={window.size.width}
-            height={window.size.height}
+            className={`windowContainer ${isDragging ? 'dragging' : ''} ${window.isMinimized ? 'minimized' : ''} ${window.isMaximized ? 'maximized' : ''}`}
+            style={{
+                left: window.position.x,
+                top: window.position.y,
+                width: window.size.width,
+                height: window.size.height,
+                zIndex: window.zIndex
+            }}
             onMouseDown={handleMouseDown}
-            className={isDragging ? 'dragging' : ''}
         >
             <div className="window">
-                <div className="title-bar" data-title-bar>
-                    <div className="title-bar-text">{window.title}</div>
-                    <div className="title-bar-controls">
+                <div className="titleBar" data-title-bar>
+                    <div className="titleBarText">{window.title}</div>
+                    <div className="titleBarControls">
                         <button 
                             aria-label="Close"
-                            onClick={() => onClose(window.id)}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onClose(window.id);
+                            }}
                             title="Close"
-                            className="close"
-                        />
+                            className="closeButton"
+                        >
+                            ×
+                        </button>
                     </div>
                 </div>
                 
-                <div className="window-body">
+                <div className="windowBody">
                     {children}
                 </div>
             </div>
             
             {!window.isMaximized && (
                 <div
-                    style={{
-                        position: 'absolute',
-                        right: 0,
-                        bottom: 0,
-                        width: '20px',
-                        height: '20px',
-                        cursor: 'nw-resize',
-                        background: 'transparent'
-                    }}
+                    className="resizeHandle"
                     onMouseDown={handleResizeStart}
                 />
             )}
-        </WindowContainer>
+        </div>
     );
 };
 

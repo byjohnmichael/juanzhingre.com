@@ -1,50 +1,26 @@
 import React from 'react';
+import './Origins.css';
 
 interface CreditsWindowProps {
-  onClose: () => void;
+    onClose: () => void;
 }
 
 const CreditsWindow: React.FC<CreditsWindowProps> = ({ onClose }) => {
     return (
-        <div style={{ 
-            height: '100%', 
-            padding: '20px',
-            background: '#c0c0c0',
-            fontFamily: 'Arial, sans-serif',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center'
-        }}>
-            <h1 style={{
-                fontSize: '24px',
-                fontWeight: 'bold',
-                textDecoration: 'underline',
-                margin: '0 0 30px 0',
-                color: '#000',
-                textAlign: 'center'
-            }}>
+        <div className="container">
+            <h1 className="title">
                 Origins
             </h1>
             
-            <div style={{
-                fontSize: '16px',
-                lineHeight: '1.8',
-                color: '#000',
-                textAlign: 'center'
-            }}>
-                <div style={{ marginBottom: '15px' }}>
+            <div className="content">
+                <div className="creditSection">
                     Directed and creative decisions made<br />
                     <strong>
                         <a 
                             href="https://byjohmichael.com" 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            style={{ 
-                                textDecoration: 'underline', 
-                                color: '#000',
-                                textDecorationColor: '#000'
-                            }}
+                            className="link"
                         >
                             By John Michael
                         </a>

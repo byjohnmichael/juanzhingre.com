@@ -1,82 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-
-const MusicContainer = styled.div`
-  display: flex;
-  height: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  background:rgb(184, 184, 184);
-  border: 2px solid black;
-  font-family: 'Courier New', monospace;
-`;
-
-const LeftSection = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-`;
-
-const ProfileCircle = styled.div`
-  width: 120px;
-  height: 120px;
-  border: 2px solid black;
-  border-radius: 50%;
-  margin-bottom: 30px;
-  background: white;
-  overflow: hidden;
-  
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-`;
-
-const ProfileText = styled.div`
-  text-align: center;
-  font-size: 16px;
-  line-height: 1.4;
-  color: black;
-`;
-
-const RightSection = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 40px 20px;
-  justify-content: center;
-`;
-
-const ServiceList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-`;
-
-const ServiceItem = styled.a`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  color: black;
-  font-size: 16px;
-  padding: 8px 0;
-  transition: background-color 0.2s ease;
-  
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
-
-const ServiceIcon = styled.img`
-  width: 24px;
-  height: 24px;
-  flex-shrink: 0;
-`;
+import './MusicWindow.css';
 
 const MusicWindow: React.FC = () => {
     const musicServices = [
@@ -103,33 +26,34 @@ const MusicWindow: React.FC = () => {
     ];
 
     return (
-        <MusicContainer>
-            <LeftSection>
-                <ProfileCircle>
-                    <img src="/icons/profile.jpg" alt="Profile" />
-                </ProfileCircle>
-                <ProfileText>
+        <div className="musicContainer">
+            <div className="leftSection">
+                <div className="profileCircle">
+                    <img src="/social-icons/profile.jpg" alt="Profile" />
+                </div>
+                <div className="profileText">
                     hey this is my music<br />
                     hope you enjoy :)
-                </ProfileText>
-            </LeftSection>
+                </div>
+            </div>
             
-            <RightSection>
-                <ServiceList>
+            <div className="rightSection">
+                <div className="serviceList">
                     {musicServices.map((service, index) => (
-                        <ServiceItem 
+                        <a 
                             key={index} 
+                            className="serviceItem"
                             href={service.url} 
                             target="_blank" 
                             rel="noopener noreferrer"
                         >
-                            <ServiceIcon src={service.icon} alt={service.name} />
+                            <img src={service.icon} alt={service.name} className="serviceIcon" />
                             {service.name}
-                        </ServiceItem>
+                        </a>
                     ))}
-                </ServiceList>
-            </RightSection>
-        </MusicContainer>
+                </div>
+            </div>
+        </div>
     );
 };
 

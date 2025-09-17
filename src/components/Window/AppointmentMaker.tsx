@@ -1,48 +1,83 @@
 import React, { useState } from 'react';
 import emailjs from '@emailjs/browser';
+import smsService from '../../services/smsService';
+import './AppointmentMaker.css';
 
 interface AppointmentMakerProps {
     onClose: () => void;
 }
 
 const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
+    // Cut selection
+    const [cutSelected, setCutSelected] = useState(false);
+    
+    // Availability
+    const [selectedDay, setSelectedDay] = useState<string>('');
+    const [selectedTime, setSelectedTime] = useState<string>('');
+    
+    // Location
+    const [isHouseCall, setIsHouseCall] = useState(false);
+    
+    // Contact info
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
-    const [selectedDays, setSelectedDays] = useState<string[]>([]);
-    const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
+    const [address, setAddress] = useState('');
+    
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [smsEnabled, setSmsEnabled] = useState(true);
+    const [businessPhone] = useState(process.env.BUSINESS_PHONE || '');
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    const timeSlots = ['Morning', 'Afternoon', 'Evening'];
-
-    const handleDayToggle = (day: string) => {
-        setSelectedDays(prev => 
-            prev.includes(day) 
-                ? prev.filter(d => d !== day)
-                : [...prev, day]
-        );
+    
+    const getTimeSlots = (day: string) => {
+        if (day === 'Saturday') {
+            return ['12:00PM', '2:00PM', '4:00PM', '6:00PM'];
+        } else {
+            return ['4:00PM', '6:00PM'];
+        }
     };
 
-    const handleTimeToggle = (time: string) => {
-        setSelectedTimes(prev => 
-            prev.includes(time) 
-                ? prev.filter(t => t !== time)
-                : [...prev, time]
-        );
+    const validatePhone = (phone: string) => {
+        const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+        return phoneRegex.test(phone.replace(/[\s\-()]/g, ''));
+    };
+
+    const isFormComplete = () => {
+        const hasCut = cutSelected;
+        const hasAvailability = selectedDay && selectedTime;
+        const hasLocation = isHouseCall !== null;
+        const hasContact = name && phone && validatePhone(phone);
+        const hasAddress = !isHouseCall || address;
+        
+        return hasCut && hasAvailability && hasLocation && hasContact && hasAddress;
     };
 
     const handleSchedule = async () => {
-        if (name && phone && selectedDays.length > 0 && selectedTimes.length > 0) {
+        if (isFormComplete()) {
             setIsSubmitting(true);
             
             try {
-                // Send email using EmailJS
-                const templateParams = {
+                const appointmentDetails = {
                     name: name,
-                    time: selectedTimes.join(', '),
-                    message: `${name} wants a cut, this is their phone number: ${phone}\n\nAvailable Days: ${selectedDays.join(', ')}\nTime Preference: ${selectedTimes.join(', ')}`
+                    phone: phone,
+                    cut: 'Volume 1 Cut',
+                    day: selectedDay,
+                    time: selectedTime,
+                    location: isHouseCall ? `House Call (+$5) - ${address}` : 'At Location',
+                    address: isHouseCall ? address : undefined
                 };
 
+                const templateParams = {
+                    name: name,
+                    phone: phone,
+                    cut: 'Volume 1 Cut',
+                    day: selectedDay,
+                    time: selectedTime,
+                    location: isHouseCall ? `House Call (+$5) - ${address}` : 'At Location',
+                    message: `New appointment request:\n\nCut: Volume 1 Cut ($20)\nDay: ${selectedDay}\nTime: ${selectedTime}\nLocation: ${isHouseCall ? `House Call (+$5) - ${address}` : 'At Location'}\n\nContact Info:\nName: ${name}\nPhone: ${phone}`
+                };
+
+                // Send email notification
                 await emailjs.send(
                     'service_li6pxqa',
                     'template_i1lmcnm',
@@ -50,261 +85,201 @@ const AppointmentMaker: React.FC<AppointmentMakerProps> = ({ onClose }) => {
                     'gyiS7YPcgxpQGxBch'
                 );
 
-                alert(`Appointment scheduled!\nName: ${name}\nPhone: ${phone}\nDays: ${selectedDays.join(', ')}\nTime: ${selectedTimes.join(', ')}\n\nI'll reach out to you soon!`);
+                // Send SMS notifications if enabled
+                if (smsEnabled) {
+                    try {
+                        // Send confirmation SMS to customer
+                        const customerSmsResult = await smsService.sendAppointmentConfirmation(appointmentDetails);
+                        if (!customerSmsResult.success) {
+                            console.warn('Customer SMS failed:', customerSmsResult.error);
+                        }
+
+                        // Send notification SMS to business owner
+                        if (businessPhone) {
+                            const businessSmsResult = await smsService.sendBusinessNotification(appointmentDetails, businessPhone);
+                            if (!businessSmsResult.success) {
+                                console.warn('Business SMS failed:', businessSmsResult.error);
+                            }
+                        }
+                    } catch (smsError) {
+                        console.warn('SMS notification failed:', smsError);
+                        // Don't fail the entire appointment if SMS fails
+                    }
+                }
+
+                alert(`Appointment scheduled!\n\nCut: Volume 1 Cut ($20)\nDay: ${selectedDay}\nTime: ${selectedTime}\nLocation: ${isHouseCall ? `House Call (+$5) - ${address}` : 'At Location'}\n\nI'll reach out to you soon!${smsEnabled ? '\n\nYou should receive a confirmation text shortly.' : ''}`);
             } catch (error) {
-                console.error('Email error:', error);
-                alert(`Appointment failed to scheduled!.`);
+                console.error('Appointment error:', error);
+                alert('Appointment failed to schedule!');
             } finally {
                 setIsSubmitting(false);
             }
             
             // Reset form
+            setCutSelected(false);
+            setSelectedDay('');
+            setSelectedTime('');
+            setIsHouseCall(false);
             setName('');
             setPhone('');
-            setSelectedDays([]);
-            setSelectedTimes([]);
+            setAddress('');
         } else {
-            alert('Please fill in all fields');
+            alert('Please fill in all required fields');
         }
     };
 
     return (
-        <div style={{ 
-            height: '100%', 
-            padding: '20px',
-            background: '#c0c0c0',
-            fontFamily: 'Arial, sans-serif',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            overflow: 'auto'
-        }}>
-            <h1 style={{
-                fontSize: window.innerWidth <= 768 ? '20px' : '24px',
-                fontWeight: 'bold',
-                margin: '0 0 20px 0',
-                color: '#000',
-                textAlign: 'center',
-                lineHeight: '1.2'
-            }}>
+        <div className="container">
+            <h1 className="title">
                 Schedule an appointment
             </h1>
             
-            <div style={{
-                width: '100%',
-                maxWidth: window.innerWidth <= 768 ? '100%' : '400px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: window.innerWidth <= 768 ? '15px' : '20px'
-            }}>
-                {/* Name Field */}
-                <div>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '5px', 
-                        fontWeight: 'bold',
-                        fontSize: window.innerWidth <= 768 ? '16px' : '14px'
-                    }}>
-                        Name:
-                    </label>
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        disabled={isSubmitting}
-                        style={{
-                            width: '100%',
-                            padding: window.innerWidth <= 768 ? '12px' : '8px',
-                            border: '2px solid #808080',
-                            borderTop: '2px solid #ffffff',
-                            borderLeft: '2px solid #ffffff',
-                            background: isSubmitting ? '#f0f0f0' : '#ffffff',
-                            fontSize: window.innerWidth <= 768 ? '16px' : '14px',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                </div>
-
-                {/* Phone Field */}
-                <div>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '5px', 
-                        fontWeight: 'bold',
-                        fontSize: window.innerWidth <= 768 ? '16px' : '14px'
-                    }}>
-                        Phone Number:
-                    </label>
-                    <input
-                        type="tel"
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        disabled={isSubmitting}
-                        style={{
-                            width: '100%',
-                            padding: window.innerWidth <= 768 ? '12px' : '8px',
-                            border: '2px solid #808080',
-                            borderTop: '2px solid #ffffff',
-                            borderLeft: '2px solid #ffffff',
-                            background: isSubmitting ? '#f0f0f0' : '#ffffff',
-                            fontSize: window.innerWidth <= 768 ? '16px' : '14px',
-                            boxSizing: 'border-box'
-                        }}
-                    />
-                </div>
-
-                {/* Availability Days */}
-                <div>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '10px', 
-                        fontWeight: 'bold',
-                        fontSize: window.innerWidth <= 768 ? '16px' : '14px'
-                    }}>
-                        Availability:
-                    </label>
-                    <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: window.innerWidth <= 768 ? '1fr' : 'repeat(2, 1fr)',
-                        gap: window.innerWidth <= 768 ? '12px' : '8px'
-                    }}>
-                        {days.map(day => (
-                            <label key={day} style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                fontSize: window.innerWidth <= 768 ? '16px' : '14px',
-                                padding: window.innerWidth <= 768 ? '12px 16px' : '8px 12px',
-                                borderRadius: '4px',
-                                transition: 'all 0.2s',
-                                opacity: isSubmitting ? 0.6 : 1,
-                                backgroundColor: selectedDays.includes(day) ? '#e8f5e8' : 'transparent',
-                                border: selectedDays.includes(day) ? '2px solid #4CAF50' : '2px solid transparent',
-                                fontWeight: selectedDays.includes(day) ? 'bold' : 'normal',
-                                minHeight: window.innerWidth <= 768 ? '48px' : 'auto'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isSubmitting) {
-                                    e.currentTarget.style.backgroundColor = selectedDays.includes(day) ? '#d4edda' : '#f0f0f0';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = selectedDays.includes(day) ? '#e8f5e8' : 'transparent';
-                            }}>
-                                <input
-                                    type="checkbox"
-                                    checked={selectedDays.includes(day)}
-                                    onChange={() => handleDayToggle(day)}
-                                    disabled={isSubmitting}
-                                    style={{
-                                        marginRight: '10px',
-                                        width: window.innerWidth <= 768 ? '24px' : '18px',
-                                        height: window.innerWidth <= 768 ? '24px' : '18px',
-                                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                        accentColor: '#4CAF50',
-                                        transform: window.innerWidth <= 768 ? 'scale(1.5)' : 'scale(1.2)'
-                                    }}
-                                />
-                                {day}
-                            </label>
-                        ))}
+            <div className="formContainer">
+                {/* Cut Selection */}
+                <div className="fieldGroup">
+                    <label className="label">cut:</label>
+                    <div className="cutContainer">
+                        <button
+                            className={`cutButton ${cutSelected ? 'selected' : ''}`}
+                            onClick={() => setCutSelected(!cutSelected)}
+                            disabled={isSubmitting}
+                        >
+                            volume 1 cut - $20
+                        </button>
                     </div>
                 </div>
 
-                {/* Time Selection */}
-                <div>
-                    <label style={{ 
-                        display: 'block', 
-                        marginBottom: '10px', 
-                        fontWeight: 'bold',
-                        fontSize: window.innerWidth <= 768 ? '16px' : '14px'
-                    }}>
-                        Time Preference:
-                    </label>
-                    <div style={{
-                        display: 'flex',
-                        gap: window.innerWidth <= 768 ? '12px' : '10px',
-                        flexWrap: 'wrap'
-                    }}>
-                        {timeSlots.map(time => (
-                            <label key={time} style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                fontSize: window.innerWidth <= 768 ? '16px' : '14px',
-                                padding: window.innerWidth <= 768 ? '12px 16px' : '8px 12px',
-                                borderRadius: '4px',
-                                transition: 'all 0.2s',
-                                opacity: isSubmitting ? 0.6 : 1,
-                                backgroundColor: selectedTimes.includes(time) ? '#e8f5e8' : 'transparent',
-                                border: selectedTimes.includes(time) ? '2px solid #4CAF50' : '2px solid transparent',
-                                fontWeight: selectedTimes.includes(time) ? 'bold' : 'normal',
-                                minHeight: window.innerWidth <= 768 ? '48px' : 'auto'
-                            }}
-                            onMouseEnter={(e) => {
-                                if (!isSubmitting) {
-                                    e.currentTarget.style.backgroundColor = selectedTimes.includes(time) ? '#d4edda' : '#f0f0f0';
-                                }
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.backgroundColor = selectedTimes.includes(time) ? '#e8f5e8' : 'transparent';
-                            }}>
+                {/* Availability Section - Only show if cut is selected */}
+                {cutSelected && (
+                    <div className="fieldGroup">
+                        <label className="label">availability:</label>
+                        <div className="availabilityContainer">
+                            <div className="daysColumn">
+                                {days.map(day => (
+                                    <button
+                                        key={day}
+                                        className={`dayButton ${selectedDay === day ? 'selected' : ''}`}
+                                        onClick={() => {
+                                            setSelectedDay(day);
+                                            setSelectedTime(''); // Reset time when day changes
+                                        }}
+                                        disabled={isSubmitting}
+                                    >
+                                        {day}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="timesColumn">
+                                {selectedDay && getTimeSlots(selectedDay).map(time => (
+                                    <button
+                                        key={time}
+                                        className={`timeButton ${selectedTime === time ? 'selected' : ''}`}
+                                        onClick={() => setSelectedTime(time)}
+                                        disabled={isSubmitting}
+                                    >
+                                        {time}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Location Section - Only show if day and time are selected */}
+                {cutSelected && selectedDay && selectedTime && (
+                    <div className="fieldGroup">
+                        <label className="label">location:</label>
+                        <div className="locationContainer">
+                            <button
+                                className={`locationButton ${isHouseCall ? 'selected' : ''}`}
+                                onClick={() => setIsHouseCall(true)}
+                                disabled={isSubmitting}
+                            >
+                                house call (+$5)
+                            </button>
+                            <button
+                                className={`locationButton ${!isHouseCall ? 'selected' : ''}`}
+                                onClick={() => setIsHouseCall(false)}
+                                disabled={isSubmitting}
+                            >
+                                at location
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Contact Info Section - Only show if location is selected */}
+                {cutSelected && selectedDay && selectedTime && (
+                    <div className="fieldGroup">
+                        <div className="contactRow">
+                            <div className="contactField">
+                                <label className="label">name:</label>
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    disabled={isSubmitting}
+                                    className="input"
+                                />
+                            </div>
+                            <div className="contactField">
+                                <label className="label">phone number:</label>
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    disabled={isSubmitting}
+                                    className="input"
+                                    placeholder="Enter valid phone number"
+                                />
+                                {phone && !validatePhone(phone) && (
+                                    <span className="errorText">Please enter a valid phone number</span>
+                                )}
+                            </div>
+                            {isHouseCall && (
+                                <div className="contactField">
+                                    <label className="label">address:</label>
+                                    <input
+                                        type="text"
+                                        value={address}
+                                        onChange={(e) => setAddress(e.target.value)}
+                                        disabled={isSubmitting}
+                                        className="input"
+                                        placeholder="Enter your address"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                        
+                        {/* SMS Notification Toggle */}
+                        <div className="smsToggleContainer">
+                            <label className="smsToggleLabel">
                                 <input
                                     type="checkbox"
-                                    checked={selectedTimes.includes(time)}
-                                    onChange={() => handleTimeToggle(time)}
+                                    checked={smsEnabled}
+                                    onChange={(e) => setSmsEnabled(e.target.checked)}
                                     disabled={isSubmitting}
-                                    style={{
-                                        marginRight: '10px',
-                                        width: window.innerWidth <= 768 ? '24px' : '18px',
-                                        height: window.innerWidth <= 768 ? '24px' : '18px',
-                                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                                        accentColor: '#4CAF50',
-                                        transform: window.innerWidth <= 768 ? 'scale(1.5)' : 'scale(1.2)'
-                                    }}
+                                    className="smsToggle"
                                 />
-                                {time}
+                                <span className="smsToggleText">
+                                    📱 Send SMS confirmation (recommended)
+                                </span>
                             </label>
-                        ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Schedule Button */}
                 <button
                     onClick={handleSchedule}
-                    disabled={isSubmitting}
-                    style={{
-                        padding: window.innerWidth <= 768 ? '16px 32px' : '12px 24px',
-                        background: isSubmitting ? '#cccccc' : '#4CAF50',
-                        color: 'white',
-                        border: '2px solid #ffffff',
-                        borderRight: '2px solid #808080',
-                        borderBottom: '2px solid #808080',
-                        borderLeft: '2px solid #ffffff',
-                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                        fontSize: window.innerWidth <= 768 ? '18px' : '16px',
-                        fontWeight: 'bold',
-                        alignSelf: 'center',
-                        boxShadow: 'inset 1px 1px 0px rgba(255, 255, 255, 0.3)',
-                        marginTop: '10px',
-                        minHeight: window.innerWidth <= 768 ? '56px' : 'auto',
-                        minWidth: window.innerWidth <= 768 ? '200px' : 'auto'
-                    }}
-                    onMouseEnter={(e) => {
-                        if (!isSubmitting) {
-                            e.currentTarget.style.background = '#45a049';
-                        }
-                    }}
-                    onMouseLeave={(e) => {
-                        if (!isSubmitting) {
-                            e.currentTarget.style.background = '#4CAF50';
-                        }
-                    }}
+                    disabled={!isFormComplete() || isSubmitting}
+                    className={`scheduleButton ${!isFormComplete() ? 'disabled' : ''}`}
                 >
                     {isSubmitting ? 'Scheduling...' : 'Schedule'}
                 </button>
             </div>
         </div>
     );
-}; export default AppointmentMaker;
+};
+
+export default AppointmentMaker;

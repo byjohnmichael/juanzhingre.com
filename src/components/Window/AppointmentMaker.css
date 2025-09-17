@@ -1,0 +1,346 @@
+.container {
+    height: 100%;
+    padding: 20px;
+    background: #c0c0c0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0 0 20px 0;
+    color: #000;
+    text-align: center;
+    line-height: 1.2;
+}
+
+@media (max-width: 768px) {
+    .title {
+        font-size: 20px;
+    }
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex: 1;
+    justify-content: flex-start;
+}
+
+@media (max-width: 768px) {
+    .formContainer {
+        max-width: 100%;
+        gap: 15px;
+    }
+}
+
+.fieldGroup {
+    /* Empty for now */
+}
+
+.label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .label {
+        font-size: 16px;
+    }
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #808080;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    background: #ffffff;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.input:disabled {
+    background: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+    .input {
+        padding: 12px;
+        font-size: 16px;
+    }
+}
+
+/* Cut Selection Styles */
+.cutContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cutButton {
+    padding: 8px 16px;
+    background: #ffffff;
+    border: 2px solid #808080;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.cutButton:hover:not(:disabled) {
+    background: #f0f0f0;
+}
+
+.cutButton.selected {
+    background: #e8f5e8;
+    border: 2px solid #4CAF50;
+}
+
+.cutButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Availability Styles */
+.availabilityContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .availabilityContainer {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+.daysColumn, .timesColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.dayButton, .timeButton {
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 2px solid #808080;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    text-align: left;
+    transition: all 0.2s;
+}
+
+.dayButton:hover:not(:disabled), .timeButton:hover:not(:disabled) {
+    background: #f0f0f0;
+}
+
+.dayButton.selected, .timeButton.selected {
+    background: #e8f5e8;
+    border: 2px solid #4CAF50;
+    font-weight: bold;
+}
+
+.dayButton:disabled, .timeButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+    .dayButton, .timeButton {
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+}
+
+/* Location Styles */
+.locationContainer {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .locationContainer {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+.locationButton {
+    flex: 1;
+    padding: 8px 16px;
+    background: #ffffff;
+    border: 2px solid #808080;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.locationButton:hover:not(:disabled) {
+    background: #f0f0f0;
+}
+
+.locationButton.selected {
+    background: #e8f5e8;
+    border: 2px solid #4CAF50;
+    font-weight: bold;
+}
+
+.locationButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+    .locationButton {
+        font-size: 16px;
+        padding: 12px 16px;
+    }
+}
+
+/* Contact Row Styles */
+.contactRow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contactField {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.contactField .label {
+    margin-bottom: 0;
+    font-size: 14px;
+    white-space: nowrap;
+    min-width: fit-content;
+}
+
+.contactField .input {
+    flex: 1;
+    width: auto;
+}
+
+@media (max-width: 768px) {
+    .contactField {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    
+    .contactField .input {
+        width: 100%;
+    }
+}
+
+/* Error Text */
+.errorText {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.scheduleButton {
+    padding: 12px 24px;
+    background: #4CAF50;
+    color: white;
+    border: 2px solid #ffffff;
+    border-right: 2px solid #808080;
+    border-bottom: 2px solid #808080;
+    border-left: 2px solid #ffffff;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    align-self: center;
+    box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.3);
+    margin-top: auto;
+    min-height: auto;
+    min-width: auto;
+}
+
+.scheduleButton:disabled,
+.scheduleButton.disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .scheduleButton {
+        padding: 16px 32px;
+        font-size: 18px;
+        min-height: 56px;
+        min-width: 200px;
+    }
+}
+
+.scheduleButton:hover:not(:disabled) {
+    background: #45a049;
+}
+
+/* SMS Toggle Styles */
+.smsToggleContainer {
+    margin-top: 15px;
+    padding: 10px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.smsToggleLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 0;
+}
+
+.smsToggle {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.smsToggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.smsToggleText {
+    user-select: none;
+    color: #495057;
+}
+
+@media (max-width: 768px) {
+    .smsToggleContainer {
+        margin-top: 10px;
+        padding: 8px;
+    }
+    
+    .smsToggleLabel {
+        font-size: 16px;
+    }
+}
+
