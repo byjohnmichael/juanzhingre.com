@@ -47,7 +47,7 @@ async function sendSMS(phone, message) {
 }
 
 // Main handler
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     // Set CORS headers
     const allowedOrigins = process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',') : ['*'];
     const origin = req.headers.origin;

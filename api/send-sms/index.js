@@ -52,7 +52,7 @@ async function sendSMS(phone, message) {
 }
 
 // Main handler
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     // Set CORS headers
     const allowedOrigins = process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.split(',') : ['*'];
     const origin = req.headers.origin;
@@ -73,6 +73,15 @@ export default async function handler(req, res) {
     }
 
     try {
+        // Check if TEXTBELT_KEY is configured
+        if (!process.env.TEXTBELT_KEY) {
+            console.error('TEXTBELT_KEY environment variable not set');
+            return res.status(500).json({
+                success: false,
+                error: 'SMS service not configured'
+            });
+        }
+
         const { phone, message, type, appointment } = req.body;
 
         // Validate required fields
